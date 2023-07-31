@@ -1,27 +1,29 @@
+import 'dart:ffi';
+
 class DailyDataModel {
-  final DateTime date;
-  late int prodTray; //production of eggs in trays
-  late int prodCarton; //production of eggs in cartoons
+  final DateTime prodDate;
+  late int? prodTray; //production of eggs in trays
+  late int? prodCarton; //production of eggs in cartoons
   final int? incomFeed; //income feeds today
-  late int intakFeed; //intake feeds today
+  late double intakFeed; //intake feeds today
   final int? death; // no of death birds
   final int? incomTrays; //no of incoming trays
   final int? incomCartoons; //no of incoming cartoons
   final int? outEggsTray; // no of eggs in trays get out
-  final String? outTrayEggsNote; //who take the out trays
-  final int? outCartonEggs; // no of eggs cartons get out
-  final String? outCartonEggsNote; //who take the out cartons
+  //final String? outTrayEggsNote; //who take the out trays
+  final int? outEggsCarton; // no of eggs cartons get out
+  final String? outEggsNote; //who take the out cartons
   final int? outBags;
   final String? outBagsNote;
 
   DailyDataModel(
-      {required this.date,
+      {required this.prodDate,
       required this.prodTray,
       required this.prodCarton,
       required this.outEggsTray,
-      required this.outTrayEggsNote,
-      required this.outCartonEggs,
-      required this.outCartonEggsNote,
+      //required this.outTrayEggsNote,
+      required this.outEggsCarton,
+      required this.outEggsNote,
       required this.incomFeed,
       required this.intakFeed,
       required this.death,
@@ -29,15 +31,29 @@ class DailyDataModel {
       required this.incomCartoons,
       required this.outBags,
       required this.outBagsNote});
+
   factory DailyDataModel.fromJson(Map<String, dynamic> json) {
+    print(' in factory $json');
+    double _parseValue(Map<String, dynamic> json) {
+      final value = json['intakFeed'];
+      if (value is int) {
+        return value.toDouble();
+      } else if (value is double) {
+        return value;
+      } else {
+        throw FormatException(
+            'Invalid JSON: intakFeed should be a double , but ${value.runtimeType} was found inside $json');
+      }
+    }
+
     return DailyDataModel(
-      date: json['date'],
+      prodDate: json['prodDate'],
       prodTray: json['prodTray'],
       prodCarton: json['prodCarton'],
       outEggsTray: json['outEggsTray'],
-      outTrayEggsNote: json['outTrayEggsNote'],
-      outCartonEggs: json['outCartonEggs'],
-      outCartonEggsNote: json['outCartonEggsNote'],
+      // outTrayEggsNote: json['outTrayEggsNote'],
+      outEggsCarton: json['outEggsCartoon'],
+      outEggsNote: json['outEggsNote'],
       incomFeed: json['incomFeed'],
       intakFeed: json['intakFeed'],
       death: json['death'],
@@ -46,5 +62,22 @@ class DailyDataModel {
       outBags: json['outBags'],
       outBagsNote: json['outBagsNote'],
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'prodDate': prodDate,
+      'prodTray': prodTray,
+      'prodCarton': prodCarton,
+      if (outEggsTray != null) 'outEggsTray': outEggsTray,
+      if (outEggsCarton != null) 'outEggsCarton': outEggsCarton,
+      if (outEggsNote != null) 'outEggsNote': outEggsNote,
+      if (incomFeed != null) 'incomFeed ': incomFeed,
+      'intakFeed': intakFeed,
+      if (death != null) 'death': death,
+      if (incomTrays != null) 'incomTrays': incomTrays,
+      if (incomCartoons != null) 'incomCartoons': incomCartoons,
+      if (outBags != null) 'outBags': outBags,
+      if (outBagsNote != null) 'outBagsNote': outBagsNote,
+    };
   }
 }

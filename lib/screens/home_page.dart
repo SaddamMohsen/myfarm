@@ -19,12 +19,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String localDate = '';
   late DateTime _selectedDate;
+  final controller = DatePickerController();
 
   @override
   initState() {
     super.initState();
     // print('in init state');
     getArabDate();
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        controller.animateToDate(_selectedDate.subtract(Duration(days: 2))));
   }
 
 //initializing the Intl library for get the current date in Arabic
@@ -32,7 +35,10 @@ class _MyHomePageState extends State<MyHomePage> {
     await local_date.initializeDateFormatting('ar', null);
     var format = DateFormat.yMMMMEEEEd('ar');
     var dateString = format.format(DateTime.now());
+    // format = DateFormat.yMd('en');
+
     setState(() {
+      _selectedDate = DateTime.now();
       localDate = dateString;
     });
   }
@@ -48,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
               color: Color.fromARGB(255, 228, 231, 235),
               child: DatePicker(
+                controller: controller,
                 //subtract the current day from date.now to get the first day in month
                 DateTime.now().subtract(Duration(days: DateTime.now().day - 1)),
                 initialSelectedDate: DateTime.now(),
@@ -66,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   //print(date);
                   setState(() {
                     _selectedDate = date;
+                    print(_selectedDate);
                   });
                 },
               ))
@@ -136,7 +144,9 @@ _addBar(BuildContext context, String localDate) {
         child: MyButton(
             lable: 'إضافة الانتاج +',
             onTap: () => {
-                  Get.toNamed(RouteGenerator.addProdPage),
+                  Get.toNamed(RouteGenerator.addProdPage,
+                      arguments: {'localDate': localDate}),
+                  print(localDate),
                 }),
       ),
     ],

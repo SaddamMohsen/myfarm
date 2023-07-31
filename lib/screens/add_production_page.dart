@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:myfarm/models/dailydata.dart';
 //import 'package:flutter/services.dart';
 //import 'package:myfarm/models/dailydata.dart';
 import 'package:myfarm/routes.dart';
@@ -15,8 +17,17 @@ class AddProduction extends StatefulWidget {
 }
 
 class _AddProductionState extends State<AddProduction> {
+  DailyDataModel? todayData;
   int currentStep = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   final form = FormGroup({
+    'amberId': FormControl<int>(value: -1),
+    'prodDate': FormControl<DateTime>(value: DateTime.now()),
     // 'eggs': FormGroup({
     'prodTray': FormControl<int>(
       value: 0,
@@ -29,89 +40,143 @@ class _AddProductionState extends State<AddProduction> {
         FormControl<int>(value: 0, validators: [Validators.number]),
     'outEggsNote': FormControl<String>(disabled: true),
     'incomeFeed': FormControl<int>(value: 0, validators: [Validators.number]),
-    'consomeFeed':
-        FormControl<double>(value: 0.0, validators: [Validators.required]),
+    'intakFeed': FormControl<double>(validators: [Validators.required]),
+    // 'death': FormControl<int>(value: 0, validators: [Validators.number]),
+    //'incomTrays': FormControl<int>(value: 0, validators: [Validators.number]),
+    //'incomCartoons': FormControl<int>(value: 0, validators: [Validators.number]),
   });
-
-  /* final form2 = FormGroup({
-    'incomeFeed': FormControl<int>(value: 0, validators: [Validators.number]),
-    'consomeFeed': FormControl<double>(
-        value: 0, validators: [Validators.number, Validators.required]),
-  });*/
 
   @override
   Widget build(BuildContext context) {
     // final note = form.control('outEggsNote');
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       appBar: _appBar(context, 'العمليات اليومية في العنبر'),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: Column(children: [
-          // DropdownButton(items: items, onChanged: onChanged)
-          Text(
-            'العمليات اليومية في العنبر',
-            style: Theme.of(context).textTheme.bodyMedium,
+      body: SingleChildScrollView(
+        child: Center(
+          heightFactor: 0.9,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Column(children: [
+              // DropdownButton(items: items, onChanged: onChanged)
+              Text(
+                'العمليات اليومية في العنبر',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              Stepper(
+                margin: const EdgeInsets.only(left: 25.0, right: 15.0),
+                type: StepperType.vertical,
+                currentStep: currentStep,
+                controlsBuilder: (context, details) => Row(
+                  textDirection: TextDirection.rtl,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    //if it is the last step hide continue button
+                    ReactiveForm(
+                      formGroup: form,
+                      child: ReactiveValueListenableBuilder(
+                        formControlName: 'amberId',
+                        builder: (context, control, __) {
+                          details.currentStep ==
+                                  getSteps(currentStep, form, context).length -
+                                      1
+                              ? const Text('hhh')
+                              : form.control('amberId').value == -1
+                                  ? const Text('من فضلك حدد العنبر')
+                                  : ElevatedButton(
+                                      style: Theme.of(context)
+                                          .elevatedButtonTheme
+                                          .style,
+                                      onPressed: details.onStepContinue,
+                                      child: const Text('متابعة الادخال'),
+                                    );
+                          return MyNextButton(
+                            onPressed: details.onStepContinue,
+                            label: 'التالي',
+                          );
+                        },
+                        child: ElevatedButton(
+                          style: Theme.of(context).elevatedButtonTheme.style,
+                          onPressed: details.onStepContinue,
+                          child: const Text('متابعة الادخال'),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20.0,
+                    ),
+                    ElevatedButton(
+                      style: Theme.of(context)
+                          .elevatedButtonTheme
+                          .style
+                          ?.copyWith(
+                              backgroundColor: MaterialStateColor.resolveWith(
+                        (states) {
+                          if (states.contains(MaterialState.pressed) ||
+                              states.contains(MaterialState.focused))
+                            return const Color.fromARGB(255, 151, 135, 135);
+                          else
+                            return Color.fromARGB(255, 233, 231, 235);
+                        },
+                      )),
+                      onPressed: details.onStepCancel,
+                      child: const Text('الغاء '),
+                    ),
+                  ],
+                ),
+                onStepCancel: () => currentStep == 0
+                    ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('لا توجد خطوة قبل هذه'),
+                      ))
+                    : setState(() {
+                        currentStep -= 1;
+                      }),
+                onStepContinue: () {
+                  bool isLastStep = (currentStep ==
+                      getSteps(currentStep, form, context).length - 1);
+                  if (isLastStep) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('لقدوصلت للنهاية لا تنسى الحفظ'),
+                      ),
+                    );
+                    print(Get.arguments);
+                  } else {
+                    setState(() {
+                      currentStep += 1;
+                    });
+                  }
+                },
+                onStepTapped: (step) => setState(() {
+                  currentStep = step;
+                }),
+                steps: getSteps(currentStep, form, context),
+              )
+            ]),
           ),
-          Stepper(
-            margin: const EdgeInsets.only(left: 25.0, right: 15.0),
-            type: StepperType.vertical,
-            currentStep: currentStep,
-            controlsBuilder: (context, details) => Row(
-              textDirection: TextDirection.rtl,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  style: Theme.of(context).elevatedButtonTheme.style,
-                  onPressed: details.onStepContinue,
-                  child: const Text('متابعة الادخال'),
-                ),
-                const SizedBox(
-                  width: 20.0,
-                ),
-                ElevatedButton(
-                  style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-                      backgroundColor: MaterialStateColor.resolveWith(
-                    (states) {
-                      if (states.contains(MaterialState.pressed) ||
-                          states.contains(MaterialState.focused))
-                        return const Color.fromARGB(255, 151, 135, 135);
-                      else
-                        return Color.fromARGB(255, 233, 231, 235);
-                    },
-                  )),
-                  onPressed: details.onStepCancel,
-                  child: const Text('الغاء '),
-                ),
-              ],
-            ),
-            onStepCancel: () => currentStep == 0
-                ? ScaffoldMessenger(
-                    child: Text('لا توجد خطةه قبل هذه'),
-                  )
-                : setState(() {
-                    currentStep -= 1;
-                  }),
-            onStepContinue: () {
-              bool isLastStep = (currentStep ==
-                  getSteps(currentStep, form, context).length - 1);
-              if (isLastStep) {
-                //  return ScaffoldMessenger(child: Text('لقدوصلت للنهاية لا تنسى الحفظ');
-              } else {
-                setState(() {
-                  currentStep += 1;
-                });
-              }
-            },
-            onStepTapped: (step) => setState(() {
-              currentStep = step;
-            }),
-            steps: getSteps(currentStep, form, context),
-          )
-        ]),
+        ),
       ),
     );
   }
+}
+
+class MyNextButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String label;
+  const MyNextButton({super.key, this.onPressed, required this.label});
+  @override
+  Widget build(BuildContext context) {
+    final form = ReactiveForm.of(context);
+    return ElevatedButton(
+        child: const Text(label),
+        // ignore: invalid_use_of_protected_member
+        onPressed:
+            form?.findControl('amberId')?.value != -1 ? onPressed : null);
+  }
+
+  /*void _onPressed() {
+    print('Hello Reactive Forms!!!');
+  }*/
 }
 
 List<Step> getSteps(int currentStep, FormGroup form, BuildContext context) {
@@ -120,11 +185,42 @@ List<Step> getSteps(int currentStep, FormGroup form, BuildContext context) {
       state: currentStep > 0 ? StepState.complete : StepState.indexed,
       isActive: currentStep >= 0,
       title: const Text("حدد رقم العنبر"),
-      content: const DropdownMenu(dropdownMenuEntries: [
-        DropdownMenuEntry(label: "عنبر رقم1", value: 1),
-        DropdownMenuEntry(label: "عنبر رقم2", value: 2),
-        DropdownMenuEntry(label: "عنبر رقم3", value: 3),
-      ]),
+      content: SizedBox(
+        width: 150.0,
+        child: ReactiveForm(
+          formGroup: form,
+          child: ReactiveDropdownField(
+            decoration: InputDecoration(
+              label: Text('حدد رقم العنبر',
+                  style: Theme.of(context).textTheme.bodySmall),
+              fillColor: Colors.white54,
+              filled: true,
+              border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            ),
+            alignment: AlignmentDirectional.bottomEnd,
+            onChanged: (control) => {
+              print(control.value),
+            },
+            formControlName: 'amberId',
+            items: const [
+              DropdownMenuItem(
+                // alignment: AlignmentDirectional.centerEnd,
+                value: 1,
+                child: Text("عنبر رقم1"),
+              ),
+              DropdownMenuItem(
+                value: 2,
+                child: Text("عنبر رقم2"),
+              ),
+              DropdownMenuItem(
+                value: 3,
+                child: Text("عنبر رقم3"),
+              ),
+            ],
+          ),
+        ),
+      ),
     ),
     Step(
       state: currentStep > 2 ? StepState.complete : StepState.indexed,
@@ -145,11 +241,11 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
   return ReactiveForm(
     formGroup: form,
     child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
           margin: const EdgeInsets.only(bottom: 5.0),
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.0),
             color: const Color(0xFFF1F4F8),
@@ -159,18 +255,19 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
               style: Theme.of(context).textTheme.headlineMedium),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3.0),
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               textDirection: TextDirection.rtl,
               children: <Widget>[
                 Container(
                   width: 75.0,
-                  height: 60,
+                  height: 50,
                   color: kInputTextColor,
                   child: ReactiveTextField(
                     formControlName: 'prodTray',
-                    textInputAction: TextInputAction.go,
+                    textInputAction: TextInputAction.next,
                     onTap: (FormControl<int> control) {
                       control.reset();
                     },
@@ -192,7 +289,7 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
                 ),
                 Container(
                   width: 75.0,
-                  height: 60,
+                  height: 50,
                   color: kInputTextColor,
                   child: ReactiveTextField(
                     formControlName: 'prodCarton',
@@ -219,8 +316,8 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
                   ),
                 ),
                 Container(
-                  width: 80.0,
-                  height: 60,
+                  width: 75.0,
+                  height: 50,
                   color: kInputTextColor,
                   child: ReactiveTextField(
                     formControlName: 'outEggsTray',
@@ -257,8 +354,8 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
                   ),
                 ),
                 Container(
-                  width: 80.0,
-                  height: 60,
+                  width: 75.0,
+                  height: 50,
                   color: kInputTextColor,
                   child: ReactiveTextField(
                     formControlName: 'outEggsCarton',
@@ -294,30 +391,27 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
                 ),
               ]),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Container(
-            height: 60,
-            color: kInputTextColor,
-            child: ReactiveTextField(
-              formControlName: 'outEggsNote',
-              decoration: InputDecoration(
-                label: Text('تفاصيل البيض الخارج',
-                    style: Theme.of(context).textTheme.bodySmall),
-                hintText: 'تفاصيل البيض الخارج',
-                fillColor: Colors.white54,
-                filled: true,
-                // enabled: false,
-                border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
-              ),
-              textDirection: TextDirection.rtl,
-              validationMessages: {'required': (error) => 'وضح مع من الخارج'},
+        Container(
+          // height: MediaQuery.of(context).size.height * 2.5,
+          color: kInputTextColor,
+          child: ReactiveTextField(
+            formControlName: 'outEggsNote',
+            decoration: InputDecoration(
+              label: Text('تفاصيل البيض الخارج',
+                  style: Theme.of(context).textTheme.bodySmall),
+              hintText: 'تفاصيل البيض الخارج',
+              fillColor: Colors.white54,
+              filled: true,
+              // enabled: false,
+              border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
             ),
+            textDirection: TextDirection.rtl,
+            validationMessages: {'required': (error) => 'وضح مع من الخارج'},
           ),
         ),
         Container(
-          margin: EdgeInsets.all(20.0),
+          margin: EdgeInsets.all(10.0),
           width: 150.0,
           height: 40,
           color: kInputTextColor,
@@ -325,18 +419,21 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
               // stream: null,
               builder: (context, form, child) {
             return ElevatedButton(
-              style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-                    backgroundColor: const MaterialStatePropertyAll<Color>(
-                        Color(0xD8140DEA)),
-                  ),
+              style: Theme.of(context).elevatedButtonTheme.style,
               onPressed: () {
+                //print(child);
+                form.markAsTouched();
                 if (form.invalid) {
                   print('هناك خطأ');
-                  print(form.value);
+                  //print(form.value);
                   // mark al children as touched so errors will show up
-                  form.markAllAsTouched();
+                  //form.markAsTouched()
                 } else {
                   print(form.value);
+                  DailyDataModel todayData =
+                      DailyDataModel.fromJson(form.value);
+
+                  //print(todayData);
                 }
               },
               child: Text(
@@ -393,7 +490,7 @@ _inputFeed(FormGroup form, BuildContext context) {
                     control.reset(updateParent: true);
                   },
                   onSubmitted: (FormControl<int> control) =>
-                      form.focus('consomeFeed'),
+                      form.focus('intakFeed'),
                   decoration: InputDecoration(
                     label: Text('العلف الوارد',
                         style: Theme.of(context).textTheme.bodyMedium),
@@ -415,14 +512,13 @@ _inputFeed(FormGroup form, BuildContext context) {
                 height: 60,
                 color: kInputTextColor,
                 child: ReactiveTextField(
-                  formControlName: 'consomeFeed',
+                  formControlName: 'intakFeed',
                   keyboardType: const TextInputType.numberWithOptions(
                       signed: false, decimal: true),
                   //textInputAction: TextInputAction.next,
                   onTap: (FormControl<double> control) {
                     control.reset();
                   },
-                  // onSubmitted: (Control) => form.focus('outEggsTray'),
                   decoration: InputDecoration(
                     label: Text('العلف المستهلك',
                         style: Theme.of(context).textTheme.bodyMedium),
@@ -434,7 +530,6 @@ _inputFeed(FormGroup form, BuildContext context) {
                   textDirection: TextDirection.rtl,
                   validationMessages: {
                     'required': (error) => 'لايجب ان يكون فارغا',
-                    // 'number': (error) => 'فقط ارقام'
                   },
                 ),
               ),
@@ -489,12 +584,10 @@ _appBar(BuildContext context, String title) {
       },
       color: Theme.of(context).primaryColor,
     ),
-    title: Center(
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.headlineMedium,
-        //textDirection: TextDirection.RTL,
-      ),
+    title: Text(
+      title,
+      style: Theme.of(context).textTheme.headlineMedium,
+      //textDirection: TextDirection.RTL,
     ),
     actions: [
       Padding(
