@@ -1,5 +1,4 @@
-
-Stream<DateTime> counterStream([int maxCount = 7]) async* {
+/*Stream<DateTime> counterStream([int maxCount = 7]) async* {
   final delay = const Duration(seconds: 1);
   var counter=0;
   DateTime nowDate = DateTime.now();
@@ -33,4 +32,15 @@ void main(){
 //    print(day);
 //   print(curdate.toString());
 
+}
+*/
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+void main() {
+  print("hello");
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  var no_of =
+      firebaseFirestore.collection('Ambers').doc('No_of_Amber').snapshots();
+
+  print(no_of);
 }

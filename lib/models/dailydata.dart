@@ -33,18 +33,7 @@ class DailyDataModel {
       required this.outBagsNote});
 
   factory DailyDataModel.fromJson(Map<String, dynamic> json) {
-    print(' in factory $json');
-    double _parseValue(Map<String, dynamic> json) {
-      final value = json['intakFeed'];
-      if (value is int) {
-        return value.toDouble();
-      } else if (value is double) {
-        return value;
-      } else {
-        throw FormatException(
-            'Invalid JSON: intakFeed should be a double , but ${value.runtimeType} was found inside $json');
-      }
-    }
+    //print(' in factory $json');
 
     return DailyDataModel(
       prodDate: json['prodDate'],

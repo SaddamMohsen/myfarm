@@ -2,9 +2,6 @@
 
 import 'package:flutter/material.dart';
 
-//import 'colors.dart';
-//import 'package:material_color_utilities.dart';
-//import 'package:google_fonts/google_fonts.dart';
 class MyFarmTheme {
   static ThemeData get lightTheme {
     //1
@@ -19,10 +16,10 @@ class MyFarmTheme {
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Tajawal', //3
         buttonTheme: ButtonThemeData(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
-          buttonColor: Color(0xFFF3EDF7),
-        ),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0)),
+            buttonColor: Color.fromARGB(255, 227, 221, 231),
+            disabledColor: const Color(0xFFF6F8FA)),
         textTheme: const TextTheme(
           headlineMedium: TextStyle(
             color: Colors.black,
@@ -49,25 +46,36 @@ class MyFarmTheme {
         ),
         dropdownMenuTheme: DropdownMenuThemeData(
             menuStyle: MenuStyle(
+          alignment: AlignmentDirectional.bottomEnd,
           backgroundColor: const MaterialStatePropertyAll<Color>(
-              Color.fromARGB(255, 233, 231, 235)),
+              Color.fromARGB(255, 124, 118, 129)),
           side:
               MaterialStateBorderSide.resolveWith((Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
-              return const BorderSide(color: Color.fromARGB(255, 116, 87, 85));
+            if (states.contains(MaterialState.selected) ||
+                states.contains(MaterialState.hovered)) {
+              return const BorderSide(
+                  width: 2, color: Color.fromARGB(255, 116, 87, 85));
             }
-            return null; // Defer to default value on the theme or widget.
+            return const BorderSide(
+                width: 2,
+                style: BorderStyle.solid,
+                color: Color.fromARGB(255, 59, 55,
+                    55)); // Defer to default value on the theme or widget.
           }),
         )),
         // ignore: prefer_const_constructors
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
+          elevation: const MaterialStatePropertyAll<double>(5.0),
           side:
               MaterialStateBorderSide.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.pressed) ||
                 states.contains(MaterialState.hovered)) {
               return const BorderSide(color: Color.fromARGB(255, 56, 78, 207));
-            }
+            } else if (states.contains(MaterialState.disabled))
+              return const BorderSide(
+                  color: Color.fromARGB(255, 229, 230, 231),
+                  style: BorderStyle.solid);
             return null; // Defer to default value on the theme or widget.
           }),
           backgroundColor:
@@ -75,12 +83,17 @@ class MyFarmTheme {
             if (states.contains(MaterialState.pressed))
               const Color.fromARGB(255, 83, 82, 83);
             else if (states.contains(MaterialState.hovered))
-              Color.fromARGB(255, 166, 163, 168);
-            return Color.fromARGB(255, 233, 231, 235);
+              const Color.fromARGB(255, 166, 163, 168);
+            return const Color.fromARGB(255, 233, 231, 235);
           }),
-          foregroundColor: MaterialStateColor.resolveWith(
-              (states) => (Color.fromARGB(255, 23, 23, 24))),
-          padding: MaterialStateProperty.all(EdgeInsets.all(5.0)),
+          foregroundColor:
+              MaterialStateColor.resolveWith((Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled))
+              return const Color.fromARGB(255, 252, 251, 253);
+
+            return const Color.fromARGB(255, 83, 82, 83);
+          }),
+          padding: MaterialStateProperty.all(const EdgeInsets.all(5.0)),
           mouseCursor: MaterialStateMouseCursor.clickable,
         )));
   }
