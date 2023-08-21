@@ -12,15 +12,23 @@ class AmberController extends GetxController {
 
   List<Amber> get getAmbersList => ambers;
 
-  void addDailyData({required DailyDataModel data, required int ambId}) async {
+  Future<String> addDailyData(
+      {required DailyDataModel data, required int ambId}) async {
     Indicator.showLoading();
-    await repository.addDailyData(todayData: data, ambId: ambId);
+    final String returnStatus;
+    try {
+      returnStatus =
+          await repository.addDailyData(todayData: data, ambId: ambId);
+    } catch (e) {
+      return Future.error(e);
+    }
     Indicator.closeLoading();
+    return returnStatus;
   }
 
   @override
   void onReady() {
-    print('in onReady Controller');
+    //  print('in onReady Controller');
     // ignore: todo
     // TODO: implement onReady
     super.onReady();

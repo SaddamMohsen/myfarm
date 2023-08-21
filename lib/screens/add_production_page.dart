@@ -64,10 +64,12 @@ class _AddProductionState extends State<AddProduction> {
         FormControl<int>(value: 0, validators: [Validators.number]),
     'outEggsNote': FormControl<String>(disabled: true),
     'incomeFeed': FormControl<int>(value: 0, validators: [Validators.number]),
-    'intakFeed': FormControl<double>(validators: [Validators.required]),
-    // 'death': FormControl<int>(value: 0, validators: [Validators.number]),
-    //'incomTrays': FormControl<int>(value: 0, validators: [Validators.number]),
-    //'incomCartoons': FormControl<int>(value: 0, validators: [Validators.number]),
+    'intakFeed':
+        FormControl<double>(value: 0, validators: [Validators.required]),
+    'death': FormControl<int>(value: 0, validators: [Validators.number]),
+    'incomTrays': FormControl<int>(value: 0, validators: [Validators.number]),
+    'incomCartoons':
+        FormControl<int>(value: 0, validators: [Validators.number]),
   });
 
   @override
@@ -241,10 +243,6 @@ List<Step> getSteps(int currentStep, FormGroup form, BuildContext context) {
                   );
                 }).toList(),
               );
-              /*}
-               else {
-                return const CircularProgressIndicator();
-              }*/
             },
           ),
         ),
@@ -411,35 +409,98 @@ _iputProductionEggs(FormGroup form, BuildContext context) {
           height: 40,
           color: kInputTextColor,
           child: ReactiveFormConsumer(
-              // stream: null,
-              builder: (context, form, child) {
-            return ElevatedButton(
-              style: Theme.of(context).elevatedButtonTheme.style,
-              onPressed: () {
-                //print(child);
-                form.markAllAsTouched();
-                if (form.invalid) {
-                  print('هناك خطأ');
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('خطأ في القيم المدخله الرجاء التأكد ')));
-                } else {
-                  form.control(inputFormControl.prodDate.name).value =
-                      Get.arguments['localDate'];
-                  print(form.value);
-                  DailyDataModel todayData =
-                      DailyDataModel.fromJson(form.value);
-                  print(todayData);
-                  _controller.addDailyData(
-                      data: todayData,
-                      ambId: form.control(inputFormControl.amberId.name).value);
-                }
-              },
-              child: Text(
-                'حفظ البيانات',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            );
-          }),
+            // stream: null,
+            builder: (context, form, child) {
+              return ElevatedButton(
+                style: Theme.of(context).elevatedButtonTheme.style,
+                onPressed: () {
+                  //print(child);
+                  form.markAllAsTouched();
+                  if (form.invalid) {
+                    // print('هناك خطأ');
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('خطأ في القيم المدخله الرجاء التأكد ')));
+                  } else {
+                    form.control(inputFormControl.prodDate.name).value =
+                        Get.arguments['localDate'];
+
+                    try {
+                      DailyDataModel todayData =
+                          DailyDataModel.fromJson(form.value);
+                      FutureBuilder(
+                        future: _controller.addDailyData(
+                            data: todayData,
+                            ambId: form
+                                .control(inputFormControl.amberId.name)
+                                .value),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'خطأ في عملية الرفع لقاعدة البيانات ')));
+                            } else if (snapshot.hasData) {
+                              print(snapshot.data);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text('تم رفع البيانات بنجاح'),
+                                duration: Duration(seconds: 5),
+                              ));
+                              try {
+                                form.resetState({
+                                  inputFormControl.prodDate.name: ControlState(
+                                      value: Get.arguments['localDate']),
+                                  inputFormControl.amberId.name:
+                                      ControlState(value: 0),
+                                  inputFormControl.incomeFeed.name:
+                                      ControlState(value: 0),
+                                  inputFormControl.intakFeed.name:
+                                      ControlState(value: 0.0),
+                                  inputFormControl.prodTray.name:
+                                      ControlState(value: 0),
+                                  inputFormControl.prodCarton.name:
+                                      ControlState(value: 0),
+                                  inputFormControl.outEggsTray.name:
+                                      ControlState(value: 0),
+                                  inputFormControl.outEggsCarton.name:
+                                      ControlState(value: 0),
+                                  inputFormControl.outEggsNote.name:
+                                      ControlState(value: '', disabled: true),
+                                });
+                              } catch (e) {
+                                print(e.toString());
+                              }
+                              return SnackBar(
+                                  content: Text("تابع ادخال العنابر المتبقيه"));
+                            }
+                          } else if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else {
+                            return const AlertDialog(
+                              title: Text("يعلم الله ايش به"),
+                              content: Text("عاد احنا بنعين"),
+                            );
+                          }
+                          return CircularProgressIndicator();
+                        },
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content:
+                              Text('خطأ في عملية الرفع لقاعدة البيانات ')));
+                    }
+                  }
+                },
+                child: Text(
+                  'حفظ البيانات',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              );
+            },
+          ),
         ),
       ],
     ),

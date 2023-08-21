@@ -1,6 +1,9 @@
 import 'dart:ffi';
 
+import 'package:flutter/material.dart';
+
 class DailyDataModel {
+  final int amberId;
   final DateTime prodDate;
   late int? prodTray; //production of eggs in trays
   late int? prodCarton; //production of eggs in cartoons
@@ -17,25 +20,46 @@ class DailyDataModel {
   final String? outBagsNote;
 
   DailyDataModel(
-      {required this.prodDate,
+      {required this.amberId,
+      required this.prodDate,
       required this.prodTray,
       required this.prodCarton,
-      required this.outEggsTray,
+      this.outEggsTray,
       //required this.outTrayEggsNote,
-      required this.outEggsCarton,
+      this.outEggsCarton,
       required this.outEggsNote,
       required this.incomFeed,
       required this.intakFeed,
-      required this.death,
-      required this.incomTrays,
-      required this.incomCartoons,
-      required this.outBags,
-      required this.outBagsNote});
+      this.death,
+      this.incomTrays,
+      this.incomCartoons,
+      this.outBags,
+      this.outBagsNote});
 
   factory DailyDataModel.fromJson(Map<String, dynamic> json) {
-    //print(' in factory $json');
-
+    try {
+      return DailyDataModel(
+        amberId: json['amberId'] ?? 0,
+        prodDate: json['prodDate'],
+        prodTray: json['prodTray'] ?? 0,
+        prodCarton: json['prodCarton'] ?? 0,
+        outEggsTray: json['outEggsTray'] ?? 0,
+        // outTrayEggsNote: json['outTrayEggsNote'],
+        outEggsCarton: json['outEggsCartoon'] ?? 0,
+        outEggsNote: json['outEggsNote'] ?? 'لايوجد',
+        incomFeed: json['incomeFeed'] ?? 0,
+        intakFeed: json['intakFeed'] ?? 0,
+        death: json['death'] ?? 0,
+        incomTrays: json['incomTrays'] ?? 0,
+        incomCartoons: json['incomCartoons'] ?? 0,
+        outBags: json['outBags'],
+        outBagsNote: json['outBagsNote'],
+      );
+    } catch (e) {
+      debugPrintStack();
+    }
     return DailyDataModel(
+      amberId: json['amberId'],
       prodDate: json['prodDate'],
       prodTray: json['prodTray'],
       prodCarton: json['prodCarton'],
@@ -43,7 +67,7 @@ class DailyDataModel {
       // outTrayEggsNote: json['outTrayEggsNote'],
       outEggsCarton: json['outEggsCartoon'],
       outEggsNote: json['outEggsNote'],
-      incomFeed: json['incomFeed'],
+      incomFeed: json['incomeFeed'],
       intakFeed: json['intakFeed'],
       death: json['death'],
       incomTrays: json['incomTrays'],
@@ -54,17 +78,18 @@ class DailyDataModel {
   }
   Map<String, dynamic> toJson() {
     return {
+      'amberId': amberId,
       'prodDate': prodDate,
       'prodTray': prodTray,
       'prodCarton': prodCarton,
-      if (outEggsTray != null) 'outEggsTray': outEggsTray,
-      if (outEggsCarton != null) 'outEggsCarton': outEggsCarton,
+      if (outEggsTray != 0) 'outEggsTray': outEggsTray,
+      if (outEggsCarton != 0) 'outEggsCarton': outEggsCarton,
       if (outEggsNote != null) 'outEggsNote': outEggsNote,
-      if (incomFeed != null) 'incomFeed ': incomFeed,
+      if (incomFeed != 0) 'incomeFeed ': incomFeed,
       'intakFeed': intakFeed,
-      if (death != null) 'death': death,
-      if (incomTrays != null) 'incomTrays': incomTrays,
-      if (incomCartoons != null) 'incomCartoons': incomCartoons,
+      if (death != 0) 'death': death,
+      if (incomTrays != 0) 'incomTrays': incomTrays,
+      if (incomCartoons != 0) 'incomCartoons': incomCartoons,
       if (outBags != null) 'outBags': outBags,
       if (outBagsNote != null) 'outBagsNote': outBagsNote,
     };

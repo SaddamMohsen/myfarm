@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myfarm/models/dailydata.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myfarm/widgets/indicator.dart';
 //import 'dart:ui';
 
 enum states { Success, Error }
@@ -20,7 +21,7 @@ abstract class AmberRepository {
   Future<List<Amber>> fetchAmbers();
 
   ///Add the daily data of speciefied Amber into the database
-  Future<void> addDailyData(
+  Future<String> addDailyData(
       {required DailyDataModel todayData, required int ambId});
 
   ///Get the Daily Data of speceified date from DataBase
@@ -44,9 +45,10 @@ class FackAmbersRepository implements AmberRepository {
   }
 
   @override
-  Future<void> addDailyData(
+  Future<String> addDailyData(
       {required DailyDataModel todayData, required int ambId}) async {
     debugPrint('inside AddDailyData');
+    return "Success";
     // print(todayData);
     //print(ambId);
     // ignore: unnecessary_null_comparison
@@ -95,7 +97,7 @@ class FirebaseAmbersRepository implements AmberRepository {
           await firebaseFirestore.collection('Ambers').doc('No_of_Amber').get();
 
       _noOfAmber = ambers.get('no_of_amber');
-      print(_noOfAmber);
+
       amList = [for (var i = 1; i <= _noOfAmber; i++) Amber(id: i)].toList();
     } catch (e) {
       printError();
@@ -110,22 +112,33 @@ class FirebaseAmbersRepository implements AmberRepository {
   }
 
   @override
-  Future<void> addDailyData(
+  Future<String> addDailyData(
       {required DailyDataModel todayData, required int ambId}) async {
-    debugPrint('inside AddDailyData');
+    String respone;
     try {
+      respone = 'may success';
       await firebaseFirestore
           .collection('DailyData')
           .add(todayData.toJson())
-          .then((value) => print(value));
+          .then((value) => {
+                respone = value.toString(),
+                Indicator.closeLoading(),
+                Get.showSnackbar(GetSnackBar(
+                    message: 'نجاح رفع البيانات',
+                    titleText: Text(
+                      'تم رفع بيانات عنبر  بنجاح$ambId $value',
+                    ))),
+                //  return value,
+              });
+      return respone;
     } catch (e) {
-      print('error in adding to firebase' + e.toString());
+      Get.showSnackbar(const GetSnackBar(
+          message: 'خطأ',
+          titleText: Text(
+            'خطأ بالرفع لقاعدة البيانات',
+          )));
+      return 'فشلت العملية';
     }
-    // if (todayData.prodDate != null) {
-    //   return states.Success;
-    // } else {
-    //   return states.Error;
-    // }
   }
 
   @override
