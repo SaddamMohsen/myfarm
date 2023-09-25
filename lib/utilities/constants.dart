@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
-const Color kIconColor = Color(0xFFFD5151);
+import '../routes.dart';
+
+const Color kIconColor = Color.fromARGB(255, 63, 137, 248);
 const double kIconSize = 40.0;
-const Color kInputTextColor = Color.fromARGB(255, 253, 251, 251);
+const Color kInputTextColor =
+    Color(0xffF3F6FC); //Color.fromARGB(255, 253, 251, 251);
 const kTrayNumberPattern = r'^([0-9]|1[01])$';
 
+//appBar method
 appBar(BuildContext context, String title) {
   return AppBar(
     titleSpacing: 10.0,
@@ -14,7 +18,10 @@ appBar(BuildContext context, String title) {
         color: kIconColor,
         size: kIconSize,
       ),
-      onPressed: () => {},
+      onPressed: () => {
+        Navigator.pop(context),
+        // Get.toNamed(RouteGenerator.homePage, arguments: {'title': 'مزرعتي'}),
+      },
       color: Theme.of(context).primaryColor,
     ),
     title: Center(
@@ -38,5 +45,42 @@ appBar(BuildContext context, String title) {
         ),
       ),
     ],
+  );
+}
+
+//SnackBar for messages
+SnackBar mySnackBar(BuildContext context, String message) {
+  // print(message);
+  return SnackBar(
+    duration: Duration(seconds: 2),
+    content: Column(children: [
+      const Icon(
+        Icons.warning_amber_outlined,
+        color: Colors.red,
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      Text(
+        message,
+        textAlign: TextAlign.center,
+        // style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        //       color: Color.fromARGB(255, 255, 255, 255),
+        //     ),
+      ),
+    ]),
+  );
+}
+
+//Decoration of the Input of profuction Form fields
+InputDecoration customeInputDecoration(BuildContext context, String label) {
+  return InputDecoration(
+    label: Text(label, style: Theme.of(context).textTheme.bodySmall),
+    fillColor: Colors.white54,
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(5),
+      borderSide: const BorderSide(color: Colors.red, width: 1.0),
+    ),
+    filled: true,
   );
 }

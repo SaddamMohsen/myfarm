@@ -8,18 +8,33 @@ class MyFarmTheme {
     return ThemeData(
         //2
         brightness: Brightness.light,
-        primaryColor: const Color(0xD8140DEA),
+        // backgroundColor: Color.fromARGB(187, 45, 39, 201),
+        primaryColor: const Color(0xFF4a26fd),
+        //colorSchemeSeed: Color(0xffFAFAFA),
+        cardColor: const Color(0xffFAFAFA),
+        dialogBackgroundColor: const Color(0xffF3F6FC),
+        scaffoldBackgroundColor: Color(0xffFAFAFA), //const Color(0xffF6F4EF),
+        //Color(0xffF3F6FC), // Color(0xffFAFAFA),
+        fontFamily: 'Tajawal', //3
+        appBarTheme: const AppBarTheme(
+          foregroundColor: Colors.black,
+          backgroundColor: Color(0xffFAFAFA),
+        ),
         iconButtonTheme: IconButtonThemeData(
             style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.redAccent[300]),
+          backgroundColor: MaterialStateProperty.all(
+              const Color.fromARGB(255, 189, 180, 180)),
         )),
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Tajawal', //3
         buttonTheme: ButtonThemeData(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.0)),
             buttonColor: Color.fromARGB(255, 227, 221, 231),
             disabledColor: const Color(0xFFF6F8FA)),
+        inputDecorationTheme: const InputDecorationTheme(
+          activeIndicatorBorder:
+              BorderSide(color: Color(0xFFF6F8FA), width: 0.2),
+          //RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: 5,topRight: 5))
+        ),
         textTheme: const TextTheme(
           headlineMedium: TextStyle(
             color: Colors.black,
@@ -27,22 +42,40 @@ class MyFarmTheme {
             fontSize: 14.0,
             fontWeight: FontWeight.w700,
           ),
+          headlineSmall: TextStyle(
+            color: Colors.black,
+            fontFamily: 'Tajawal',
+            fontSize: 10.0,
+            fontWeight: FontWeight.w200,
+          ),
           bodyMedium: TextStyle(
             color: Colors.black,
             fontFamily: 'Tajawal',
-            fontSize: 14.0,
+            fontSize: 12.0,
             fontWeight: FontWeight.w700,
           ),
           bodySmall: TextStyle(
             color: Colors.black,
             fontFamily: 'Tajawal',
             fontSize: 10.0,
-            fontWeight: FontWeight.w300,
+            fontWeight: FontWeight.w200,
+            decoration: TextDecoration.underline,
           ),
         ),
-        appBarTheme: const AppBarTheme(
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.white,
+        snackBarTheme: SnackBarThemeData(
+          contentTextStyle: const TextStyle(
+            color: Colors.black,
+            fontFamily: 'Tajawal',
+            fontSize: 12.0,
+            fontWeight: FontWeight.w200,
+          ),
+          backgroundColor: Color.fromARGB(255, 236, 234, 234),
+          elevation: 10.0,
+          shape: Border.all(
+            //width: 1,
+            style: BorderStyle.none,
+          ),
+          behavior: SnackBarBehavior.floating,
         ),
         dropdownMenuTheme: DropdownMenuThemeData(
             menuStyle: MenuStyle(

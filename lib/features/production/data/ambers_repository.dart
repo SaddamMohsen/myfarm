@@ -3,10 +3,11 @@ import 'dart:async';
 //import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:myfarm/models/dailydata.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myfarm/widgets/indicator.dart';
+//import 'package:get/get.dart';
+import 'package:myfarm/features/production/domain/dailydata.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:myfarm/widgets/indicator.dart';
 //import 'dart:ui';
 
 enum states { Success, Error }
@@ -17,23 +18,24 @@ class Amber {
 }
 
 abstract class AmberRepository {
+  // const AmberRepository({required this.auth});
+  // final <T> auth;
   ///This get the count of ambers to Create a list of them
   Future<List<Amber>> fetchAmbers();
 
   ///Add the daily data of speciefied Amber into the database
   Future<String> addDailyData(
-      {required DailyDataModel todayData, required int ambId});
+      {required DailyDataModel todayData});
 
   ///Get the Daily Data of speceified date from DataBase
-  Future<DailyDataModel> getProductionData(
-      {required DateTime prodDate, required int ambId});
+  Future<List<DailyDataModel>> getProductionData(
+      {required DateTime prodDate});
 }
 
 class FackAmbersRepository implements AmberRepository {
   final int _noOfAmber = 6;
   @override
   Future<List<Amber>> fetchAmbers() async {
-    debugPrint('inside loadAmbers');
     List<Amber> amList = [];
 
     amList = await Future.delayed(
@@ -46,7 +48,7 @@ class FackAmbersRepository implements AmberRepository {
 
   @override
   Future<String> addDailyData(
-      {required DailyDataModel todayData, required int ambId}) async {
+      {required DailyDataModel todayData}) async {
     debugPrint('inside AddDailyData');
     return "Success";
     // print(todayData);
@@ -60,8 +62,8 @@ class FackAmbersRepository implements AmberRepository {
   }
 
   @override
-  Future<DailyDataModel> getProductionData(
-      {required DateTime prodDate, required int ambId}) async {
+  Future<List<DailyDataModel>> getProductionData(
+      {required DateTime prodDate}) async {
     var data = <String, dynamic>{
       'amberId': 3,
       'prodDate': DateTime.now(),
@@ -76,7 +78,8 @@ class FackAmbersRepository implements AmberRepository {
       const Duration(seconds: 5),
       () => DailyDataModel.fromJson(data),
     ).then((value) => value);
-    return DailyDataModel.fromJson(data);
+    //return DailyDataModel.fromJson(data);
+    return [];
   }
 
   @override
@@ -84,7 +87,7 @@ class FackAmbersRepository implements AmberRepository {
 }
 
 //Firebase implementation of AmberRepository
-class FirebaseAmbersRepository implements AmberRepository {
+/*class FirebaseAmbersRepository implements AmberRepository {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   int _noOfAmber = 0;
   @override
@@ -122,12 +125,13 @@ class FirebaseAmbersRepository implements AmberRepository {
           .add(todayData.toJson())
           .then((value) => {
                 respone = value.toString(),
-                Indicator.closeLoading(),
-                Get.showSnackbar(GetSnackBar(
+                Indicator.closeLoading()
+                /* Get.showSnackbar(GetSnackBar(
                     message: 'نجاح رفع البيانات',
                     titleText: Text(
                       'تم رفع بيانات عنبر  بنجاح$ambId $value',
-                    ))),
+                    ),
+                    duration:const Duration(seconds: 3),)),*/
                 //  return value,
               });
       return respone;
@@ -142,8 +146,29 @@ class FirebaseAmbersRepository implements AmberRepository {
   }
 
   @override
-  Future<DailyDataModel> getProductionData(
+  Future<List<DailyDataModel>> getProductionData(
       {required DateTime prodDate, required int ambId}) async {
+    List<DailyDataModel> listData = [];
+    await firebaseFirestore
+        .collection('DailyData')
+        .where('prodDate', isEqualTo: prodDate)
+        .get()
+        .then(
+      (querySnapshot) {
+        print("Successfully completed");
+
+        listData = querySnapshot.docs
+            .map((e) => DailyDataModel.fromJson(e.data()))
+            .toList();
+      },
+      onError: (e) => Get.showSnackbar(GetSnackBar(
+          title: ' خطأ في استرجاع البيانات  ${e.printError()} ',
+          messageText: const Text(
+              'معذرة لم يتم الحصول على البيانات بنجاح حاول مرة أخرى'))),
+    );
+
+    return listData;
+  } /*
     var data = <String, dynamic>{
       'amberId': 3,
       'prodDate': DateTime.now(),
@@ -160,7 +185,8 @@ class FirebaseAmbersRepository implements AmberRepository {
     ).then((value) => value);
     return DailyDataModel.fromJson(data);
   }
+*/
 
   @override
   String toString() => "$states";
-}
+}*/

@@ -34,13 +34,22 @@ void main(){
 
 }
 */
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 void main() {
+  initializeDateFormatting('ar', null);
   print("hello");
-  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  var no_of =
-      firebaseFirestore.collection('Ambers').doc('No_of_Amber').snapshots();
+  var format = DateFormat('yMMMMEEEEd', 'ar');
 
-  print(no_of);
+  var localDate = format.format(DateTime.now());
+  //localDate = localDate.replaceAll('/', '-');
+  print(localDate);
+  /*localDate = localDate.substring(
+                      localDate.indexOf('،') + 2, localDate.length),
+                  localDate = localDate.replaceAll(' ', '/'),*/
+  var date1 = DateFormat('yMMMMEEEEd', 'ar').parseUTC(localDate);
+
+  print(date1);
 }

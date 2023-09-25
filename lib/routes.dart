@@ -1,9 +1,9 @@
 //import 'dart:io';
 //import 'dart:core';
 import 'package:flutter/material.dart';
-import 'package:myfarm/screens/add_production_page.dart';
+import 'package:myfarm/features/production/presentation/add_production_page.dart';
 import 'package:myfarm/screens/home_page.dart';
-import 'package:myfarm/screens/login_page.dart';
+import 'package:myfarm/features/authentication/presentation/login_page.dart';
 
 class RouteGenerator {
   static const String homePage = '/';
@@ -16,9 +16,12 @@ class RouteGenerator {
     switch (settings.name) {
       case homePage:
         return MaterialPageRoute(
-            builder: (_) => const MyHomePage(title: 'مزرعتي'));
+            builder: (BuildContext context) =>
+                const MyHomePage(title: 'مزرعتي'));
       case addProdPage:
-        return MaterialPageRoute(builder: (_) => AddProduction());
+        return MaterialPageRoute(
+            builder: (BuildContext context) =>
+                AddProduction(prodDate: DateTime.now()));
       case loginPage:
         return MaterialPageRoute(builder: (_) => LoginPage());
       default:
