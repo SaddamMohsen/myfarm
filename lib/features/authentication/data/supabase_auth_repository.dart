@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:myfarm/features/authentication/data/auth_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:dartz/dartz.dart';
 
 //import '../models/user.dart';
 
 class SupabaseAuthRepository extends AuthRepository {
-  SupabaseAuthRepository({required this.auth}):super(auth);
+  SupabaseAuthRepository({required this.auth}) : super(auth);
 
   final SupabaseClient auth; //= Supabase.instance.client;
 
@@ -22,30 +20,17 @@ class SupabaseAuthRepository extends AuthRepository {
       return await auth.auth
           .signInWithPassword(email: email, password: password)
           .then((value) => value.user ?? res);
-      //.whenComplete(
-      //  () => print('fetching user'),
-      //);
-      //.then((value) => res = value.user);
-
-      //final Future<User?> user = response.then((value) => value.user);
-      //print('response ');
-      //print(response);
-      //print('user');
-
-      //return Future.value(user as FutureOr<User>?);
-      // response.whenComplete((res) =>
-      // return right(AppUser(response['uuid'],response['name'],response['email'],int.parse(response['meta-data']));
-      // ));
     } on AuthException catch (e) {
-      print(' postEx1 : ${e.message}');
-      throw e;
+      if (kDebugMode) {
+        print(' postEx1 : ${e.message}');
+      }
+      rethrow;
     } catch (e) {
-      print('error2 ${e.toString()}');
-      throw e;
+      if (kDebugMode) {
+        print('error2 ${e.toString()}');
+      }
+      rethrow;
     }
-
-    // TODO: implement signInEmailAndPassword
-    //throw UnimplementedError();
   }
 
   @override
@@ -57,6 +42,11 @@ class SupabaseAuthRepository extends AuthRepository {
   @override
   Future<void> signOut() {
     // TODO: implement signOut
+    try {
+      auth.auth.signOut();
+    } catch (e) {
+      rethrow;
+    }
     throw UnimplementedError();
   }
 }

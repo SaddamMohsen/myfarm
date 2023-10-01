@@ -38,13 +38,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 setState(() {
                   isLoading = false;
                 });
-                print(error.toString());
+                // print(error.toString());
                 showDialog<void>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.warning,
-                      color: Color.fromARGB(255, 240, 52, 77),
+                      color: Theme.of(context).colorScheme.error,
                     ),
                     title: const Text('خطأ'),
                     content: Text(
@@ -66,17 +66,35 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               },
               data: (data) => {
                 user = data,
-                print('in data'),
-                print(user.userMetadata),
+                // print('in data'),
+                // print(user.userMetadata),
                 setState(() {
                   isLoading = false;
                 }),
+                //if(user.id !=null)
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MyHomePage(title: 'مزرعتي')),
-                ).onError((error, stackTrace) => debugPrint(error.toString())),
-                //Navigator.of(context).popAndPushNamed(RouteGenerator.homePage),
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const MyHomePage(title: 'مزرعتي'))),
+                // Navigator.of(context).pushReplacementNamed(RouteGenerator.homePage,
+                //         arguments: {'title': 'hhhh'})
+                //     .onError((error, stackTrace) =>
+                //         print(' error in routing ${error.toString()}')),
+                // .of(context)
+                //     .pushAndRemoveUntil<void>(
+                //         MaterialPageRoute<void>(
+                //             builder: (context) => MyHomePage(title: 'مزرعتي')),
+                //         ModalRoute.withName('/'))
+                //     .onError((error, stackTrace) => print(error.toString())),
+                // Navigator.pushAndRemoveUntil(
+                //         context,
+                //         MaterialPageRoute(
+                //             builder: (context) => MyHomePage(title: 'مزرعتي')),
+                //         ModalRoute.withName('/'))
+                //     .onError(
+                //         (error, stackTrace) => debugPrint(error.toString())),
+                //  Navigator.of(context).popAndPushNamed(RouteGenerator.homePage),
                 // .pushNamedAndRemoveUntil(
                 //     '/', ModalRoute.withName('/'),
                 //     arguments: {'title': 'مزرعتي'}),

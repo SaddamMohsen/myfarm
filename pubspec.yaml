@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.1.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -40,10 +40,23 @@ dependencies:
   get: ^4.6.5
   reactive_forms: ^16.0.1
   flutter_animate: 4.1.1+1
+  flutter_riverpod: ^2.4.0
+  #firebase_core: ^2.15.0
+  #firebase_database: ^10.2.4
+  #cloud_firestore: ^4.8.4
+  json_table: ^2.0.1
+  supabase_flutter: ^1.10.14
+  riverpod_annotation: ^2.1.5
+  freezed: ^2.4.2
+  dartz: ^0.10.1
+  easy_date_timeline: ^0.1.1
 
 dev_dependencies:
+  build_runner: ^2.4.6
+  riverpod_generator: ^2.3.2
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -65,8 +78,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - images/
-  #   - images/a_dot_ham.jpeg
+      - images/mag1.png
+      - images/mag2.png
+      - images/myfarmlogo.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -83,6 +98,7 @@ flutter:
    - family: Tajawal
      fonts:
         - asset: fonts/Tajawal-Black.ttf
+        - asset: fonts/Tajawal-ExtraBold.ttf
         - asset: fonts/Tajawal-Bold.ttf
   #         style: italic
    - family: Marhey

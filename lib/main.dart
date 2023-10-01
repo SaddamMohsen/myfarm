@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 //  import 'package:firebase_core/firebase_core.dart';
 //  import 'firebase_options.dart';
 //import 'package:myfarm/features/production/presentation/add_production_page.dart';
-import 'package:myfarm/features/authentication/presentation/login_page.dart';
 import 'package:myfarm/myfarm_theme.dart';
 import 'package:myfarm/routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'apikey.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   /* WidgetsFlutterBinding.ensureInitialized();
    await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );*/
+  //enitializeintl Package local Date to Arabic
+  initializeDateFormatting("ar_SA", null);
   try {
     await Supabase.initialize(
       url: supabase_url,
@@ -33,11 +36,13 @@ class MyfarmApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'مزرعتي',
-      locale: const Locale('ar_Ar'),
+      locale: const Locale('ar_SA'),
       theme: MyFarmTheme.lightTheme,
-      home: const LoginPage(),
+      // home: const MyHomePage(
+      //   title: 'مزرعتي',
+      // ),
       onGenerateRoute: RouteGenerator.generateRoute,
-      initialRoute: RouteGenerator.loginPage,
+      initialRoute: RouteGenerator.splashPage,
       /*getPages: [
         GetPage(
             name: RouteGenerator.loginPage,

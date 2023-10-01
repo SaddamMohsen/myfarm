@@ -1,4 +1,4 @@
-package com.example.recipes
+package com.sadco.myfarm
 
 import io.flutter.embedding.android.FlutterActivity
 

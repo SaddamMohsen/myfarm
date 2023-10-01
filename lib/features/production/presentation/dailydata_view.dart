@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:json_table/json_table.dart';
 import 'package:myfarm/features/production/domain/dailydata.dart';
+import 'package:myfarm/widgets/my_daily_data_card.dart';
 
 class DailyDataView extends StatelessWidget {
   const DailyDataView({super.key, required this.data});
@@ -11,273 +13,292 @@ class DailyDataView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         textDirection: TextDirection.rtl,
+        crossAxisAlignment: CrossAxisAlignment.center,
         //maxHeight: 900,
         //maxWidth: 300,
         children: [
           Container(
             clipBehavior: Clip.antiAlias,
-            padding: EdgeInsets.symmetric(vertical: 2,horizontal: 1),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 1),
             constraints: BoxConstraints.tightForFinite(
                 width: MediaQuery.of(context).size.width - 10, height: 50),
             // padding: const EdgeInsetsDirectional.all(20.0),
             decoration: BoxDecoration(
-                color: Color.fromARGB(153, 238, 243, 245),
+                color: const Color.fromARGB(153, 238, 243, 245),
                 borderRadius: BorderRadius.circular(20)),
-            child: const Row(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 textDirection: TextDirection.rtl,
                 children: [
-
-
-                  Text(
-                    ' الوفيات',
-                    style: TextStyle(fontSize: 10.0),
-                  ),
-
-                  Text(
-                    ' انتاج طبق',
-                    style: TextStyle(fontSize: 8.0),
+                  const Text(
+                    ' تقرير العلف والبيض يوم ',
+                    style: TextStyle(fontSize: 16.0),
                   ),
                   Text(
-                    ' انتاج كرتون',
-                    style: TextStyle(fontSize: 8.0),
-                  ),
-                  Text(
-                    ' خارج طبق',
-                    style: TextStyle(fontSize: 8.0),
-                  ),
-                  Text(
-                    ' خارج كرتون',
-                    style: TextStyle(fontSize: 8.0),
-                  ),
-                  Text(
-                    ' تفاصيل الخارج',
-                    style: TextStyle(fontSize: 8.0),
+                    data[0].prodDate.toString().substring(0, 11) ?? '',
+                    style: const TextStyle(fontSize: 10.0),
                   ),
                 ]),
           ),
           Expanded(
             child: ListView.builder(
-                //padding: const EdgeInsets.only(right: 20.0),
+                shrinkWrap: true,
                 itemCount: data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
+                    // alignment: Alignment.centerLeft,
                     decoration: BoxDecoration(
                         color: Color.fromARGB(153, 238, 243, 245),
                         borderRadius: BorderRadius.circular(20)),
-                    //constraints: BoxConstraints.expand(width: 100, height: 50),
-                    //height: 50,
-                    padding: const EdgeInsetsDirectional.all(5.0),
+
+                    padding: const EdgeInsetsDirectional.all(3.0),
                     //
                     //decoration: BoxDecoration(border: BoxBorder(),  ),
-                    child: Column(
-                      children:[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            Card(
-                              elevation:5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'رقم العنبر',
-                                      style: TextStyle(fontSize: 9.0),
-                                    ),
-                                    Divider(thickness: 2,color: Colors.lightBlueAccent,),
-                                    Text(
-                                      ' ${data[index].amberId}',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Card(
-                              elevation:5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'الوفيات',
-                                      style: TextStyle(fontSize: 8.0),
-                                    ),
-                                    Divider(thickness: 2,color: Colors.lightBlueAccent,),
-                                Text(' ${data[index].death}',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            Card(
-                              elevation:5,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.min,
-                                        textDirection: TextDirection.rtl,
-                              verticalDirection: VerticalDirection.down,
-                              children: [
-                                      Text(
-                                        ' وارد علف',
-                                        style: TextStyle(fontSize: 8.0),
+                    child: Wrap(
+                        //physics: NeverScrollableScrollPhysics(),
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        textDirection: TextDirection.rtl,
+                        direction: Axis.horizontal,
+                        alignment: WrapAlignment.center,
+                        // runAlignment: WrapAlignment.start,
+                        //spacing: 3,
+                        runSpacing: 0,
+                        children: [
+                          SingleChildScrollView(
+                            reverse: true,
+                            scrollDirection: Axis.horizontal,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                  minWidth:
+                                      MediaQuery.of(context).size.width / 2),
+                              child: Wrap(
+                                textDirection: TextDirection.rtl,
+                                alignment: WrapAlignment.spaceEvenly,
+                                //runAlignment: WrapAlignment.center,
+                                direction: Axis.vertical,
+                                children: [
+                                  ClipOval(
+                                    clipBehavior: Clip.antiAlias,
+                                    child: Container(
+                                      height: 70,
+                                      width: 60,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
                                       ),
-                                      SizedBox(width: 2,),
-                                      Text(
-                                        'مستهلك',
-                                        style: TextStyle(fontSize: 8.0),
-                                      ),
-                                      ],),
-                                      Divider(thickness: 2,color: Colors.lightBlueAccent,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        //crossAxisAlignment:CrossAxisAlignment.stretch,
-                                        mainAxisSize: MainAxisSize.max,
-                                        textDirection: TextDirection.rtl,
-                                        verticalDirection: VerticalDirection.down,
-                                        children: [
-                                          Text(' ${data[index].incomFeed}'),
-                                          SizedBox(width: 15,),
-                                          //Divider(thickness: 2,color: Colors.lightBlueAccent,),
-                                          Text(' ${data[index].intakFeed}'),
-                                        ],
-                                      ),
-
-                              ],
-                                      ),
-                                ),
-
-                            ),
-
-                            Card(
-                              elevation:5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.min,
-                                      textDirection: TextDirection.rtl,
-                                      verticalDirection: VerticalDirection.down,
-                                      children: [
-                                        Text(
-                                          ' انتاج طبق',
-                                          style: TextStyle(fontSize: 8.0),
-                                        ),
-                                        SizedBox(width: 2,),
-                                        Text(
-                                          'انتاج كرتون',
-                                          style: TextStyle(fontSize: 8.0),
-                                        ),
-                                      ],),
-                                    Divider(thickness: 2,color: Colors.lightBlueAccent,),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      mainAxisSize: MainAxisSize.min,
-                                      textDirection: TextDirection.rtl,
-                                      verticalDirection: VerticalDirection.down,
-                                      children: [
-                                        Text(' ${data[index].prodTray}'),
-                                        SizedBox(width: 15,),
-                                        Divider(thickness: 10,color: Colors.lightBlueAccent,height: 1,),
-                                        Text(' ${data[index].prodCarton}'),
-                                      ],
-                                    ),
-
-                                  ],
-                                ),
-                              ),
-
-                            ),
-
-
-
-                  ]),
-     Row(
-       mainAxisAlignment: MainAxisAlignment.center,
-       crossAxisAlignment: CrossAxisAlignment.center,
-       textDirection: TextDirection.rtl,
-       children: [
-         Card(
-           elevation:5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.min,
-                                          textDirection: TextDirection.rtl,
-                                          verticalDirection: VerticalDirection.down,
+                                      child: CircleAvatar(
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                        radius: 100,
+                                        child: Stack(
+                                          //direction: Axis.vertical,
+                                          // mainAxisAlignment:
+                                          //     MainAxisAlignment.spaceEvenly,
+                                          // crossAxisAlignment:
+                                          //     CrossAxisAlignment.center,
                                           children: [
-                                            Text(
-                                              ' الخارج طبق',
-                                              style: TextStyle(fontSize: 8.0),
+                                            const Positioned(
+                                              top: 15,
+                                              left: 10,
+                                              width: 70,
+                                              child: Text(
+                                                'رقم العنبر',
+                                                style:
+                                                    TextStyle(fontSize: 10.0),
+                                              ),
                                             ),
-                                            SizedBox(width: 2,),
-                                            Text(
-                                              'الخارج كرتون',
-                                              style: TextStyle(fontSize: 8.0),
+                                            // Divider(
+                                            //   thickness: 2,
+                                            //   color: Colors.lightBlueAccent,
+                                            // ),
+                                            Positioned(
+                                              top: 30,
+                                              left: 20,
+                                              //width: 50,
+                                              child: Center(
+                                                child: Text(
+                                                  ' ${data[index].amberId}',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headlineMedium
+                                                      ?.copyWith(
+                                                          fontSize: 20,
+                                                          color: Colors.white),
+                                                  textAlign: TextAlign.right,
+                                                ),
+                                              ),
                                             ),
-                                          ],),
-                                        Divider(thickness: 2,),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          mainAxisSize: MainAxisSize.min,
-                                          textDirection: TextDirection.rtl,
-                                          verticalDirection: VerticalDirection.down,
-                                          children: [
-                                            Text(' ${data[index].outEggsTray}'),
-                                            SizedBox(width: 20,),
-                                            Divider(thickness: 2,color: Colors.lightBlueAccent,),
-                                            Text(' ${data[index].outEggsCarton}'),
                                           ],
                                         ),
-
-                                      ],
+                                      ),
                                     ),
                                   ),
+                                  Card(
+                                    elevation: 5,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'الوفيات',
+                                            style: TextStyle(fontSize: 8.0),
+                                          ),
+                                          Divider(
+                                            thickness: 2,
+                                            color: Colors.lightBlueAccent,
+                                          ),
+                                          Text(
+                                            ' ${data[index].death}',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  MyCard(
+                                    data1: data[index].incomFeed.toString(),
+                                    data2: data[index].intakFeed.toString(),
+                                    title1: 'وارد علف',
+                                    title2: 'مستهلك علف',
+                                  ),
+                                  // MyCard(
+                                  //   data1: data[index].prodTray.toString(),
+                                  //   data2: data[index].prodCarton.toString(),
+                                  //   title1: 'انتاج طبق',
+                                  //   title2: 'انتاج كرتون',
+                                  // ),
+                                  // MyCard(
+                                  //   data1: data[index].outEggsTray.toString(),
+                                  //   data2: data[index].outEggsCarton.toString(),
+                                  //   title1: 'الخارج طبق',
+                                  //   title2: 'الخارج كرتون',
+                                  // ),
+                                  data.isNotEmpty
+                                      ? Card(
+                                          elevation: 5,
+                                          child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(5.0),
+                                              child: MyDailyDataCard(
+                                                  data: data[index])))
+                                      : SizedBox(),
 
-                                ),
-         Card(
-           elevation:5,
-           child: Padding(
-             padding: const EdgeInsets.all(5.0),
-             child: Column(
-               children: [
-                 Text(
-                   'تفاصيل الخارج',
-                   style: TextStyle(fontSize: 8.0),
-                 ),
-                 Divider(thickness: 2,color: Colors.lightBlueAccent,),
-             Text(' ${data[index].outEggsNote}',
-                   style: TextStyle(color: Colors.black,fontSize: 8.0),
-                 ),
-               ],
-             ),
-           ),
-         ),
-
-       ],
-     ),
-
-
-
-                 ]),
+                                  data[index].outEggsNote != ''
+                                      ? Card(
+                                          elevation: 5,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: Column(
+                                              children: [
+                                                const Text(
+                                                  'تفاصيل الخارج',
+                                                  style:
+                                                      TextStyle(fontSize: 8.0),
+                                                ),
+                                                Divider(
+                                                  thickness: 2,
+                                                  color: Colors.lightBlueAccent,
+                                                ),
+                                                Text(
+                                                  ' ${data[index].outEggsNote}',
+                                                  softWrap: true,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 8.0),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      : SizedBox.shrink(),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ]),
                   );
                 }),
           ),
         ]);
+  }
+}
+
+class MyCard extends StatelessWidget {
+  const MyCard({
+    super.key,
+    required this.data1,
+    required this.data2,
+    required this.title1,
+    required this.title2,
+  });
+
+  final String data1;
+  final String data2;
+  final String title1;
+  final String title2;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              textDirection: TextDirection.rtl,
+              verticalDirection: VerticalDirection.down,
+              children: [
+                Text(
+                  title1,
+                  style: TextStyle(fontSize: 8.0),
+                ),
+                SizedBox(
+                  width: 2,
+                ),
+                Text(
+                  title2,
+                  style: TextStyle(fontSize: 8.0),
+                ),
+              ],
+            ),
+            Divider(
+              thickness: 2,
+              color: Colors.lightBlueAccent,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              textDirection: TextDirection.rtl,
+              verticalDirection: VerticalDirection.down,
+              children: [
+                Text(' ${data1}'),
+                SizedBox(
+                  width: 15,
+                ),
+                Divider(
+                  thickness: 10,
+                  color: Colors.lightBlueAccent,
+                  height: 1,
+                ),
+                Text(' ${data2}'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
