@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DailyDataModel {
+  int? trId;
   int? farmId;
   final int amberId;
   final DateTime prodDate;
@@ -21,6 +22,7 @@ class DailyDataModel {
   //final String? outBagsNote;
 
   DailyDataModel({
+    this.trId,
     required this.amberId,
     required this.prodDate,
     required this.prodTray,
@@ -47,10 +49,9 @@ class DailyDataModel {
   }*/
 
   factory DailyDataModel.fromJson(Map<String, dynamic> json) {
-    //json.remove('farm_id');
-    json.forEach(
-      (key, value) => print('$key :$value : ${value.runtimeType}'),
-    );
+    // json.forEach(
+    //   (key, value) => print('$key :$value : ${value.runtimeType}'),
+    // );
     try {
       return DailyDataModel(
         amberId: json['amber_id'] ?? 0,
@@ -118,12 +119,13 @@ class DailyDataModel {
     //   (key, value) => print('$key :$value : ${value.runtimeType}'),
     // );
     json['intak_feed'] = json['intak_feed'].toString();
-    json.remove('id');
+    //json.remove('id');
     json.remove('farm_id');
     json.remove('created_at');
     try {
       DailyDataModel data = DailyDataModel(
         // farmId: json['farm_id'],
+        trId: json['id'],
         amberId: json['amber_id'] ?? 0,
         /*prodDate: json['prodDate'].runtimeType == Timestamp
             ? prodDateFire(json)
@@ -144,13 +146,12 @@ class DailyDataModel {
         //outBagsNote: json['outBagsNote'],
       );
       return data;
-    }catch(e) {
+    } catch (e) {
       print(e.toString());
       throw (e.toString());
     }
-      //print(data.toString());
-
-    }
+    //print(data.toString());
+  }
 
   Map<String, dynamic> toSupabasJson() {
     return {

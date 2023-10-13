@@ -6,20 +6,18 @@ import 'package:myfarm/features/authentication/presentation/supabase_auth_provid
 
 part 'add_production_notifier.g.dart';
 
-final productionRepositoryProvider =
-    Provider.autoDispose((ref){
-         final user=ref.watch(supaAuthRepProvider)
-        .currentUser;
-         if(user ==null)
-           throw AssertionError('user can\'t be null ');
-         return SupabaseAmbersRepository(supabaseClient: ref.watch(supabaseClientProvider),user:user);
-    }
-    );
+final productionRepositoryProvider = Provider.autoDispose((ref) {
+  //get the current logged in user from supaAuthprovider
+  final user = ref.watch(supaAuthRepProvider).currentUser;
+  if (user == null) throw AssertionError('لم تقم بتسحيل الدخول ');
+  return SupabaseAmbersRepository(
+      supabaseClient: ref.watch(supabaseClientProvider), user: user);
+});
 final productionProvider =
     FutureProvider.autoDispose.family<void, dynamic>((ref, todayData) {
   //print('inside productionRepository');
   final repository = ref.watch(productionRepositoryProvider);
-  final farmId=ref.watch(productionRepositoryProvider).user.userMetadata?['farmId'];
+  //final farmId=ref.watch(productionRepositoryProvider).user.userMetadata?['farmId'];
   return repository.addDailyData(todayData: todayData);
 });
 
@@ -32,8 +30,8 @@ class AddProductionController extends _$AddProductionController {
     final productionRepository = ref.read(productionRepositoryProvider);
     state = const AsyncValue.loading();
 
-    state = await AsyncValue.guard(() =>
-        productionRepository.addDailyData(todayData: todayData));
+    state = await AsyncValue.guard(
+        () => productionRepository.addDailyData(todayData: todayData));
     return state.hasError == true;
   }
 }

@@ -31,7 +31,7 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                     ),
                     title: const Text('خطأ'),
                     content: Text(
-                        'للأسف حدث خطأ اثناء رفع البيانات \n ${error.toString()}\n قد تكون رفعت بيانات هذا العنبر مسبقا'),
+                        'للأسف حدث خطأ اثناء رفع البيانات \n ${error.toString()}\n '),
                     actions: <Widget>[
                       TextButton(
                           child: const Text('موافق'),

@@ -13,30 +13,24 @@ import '../domain/dailydata_converter.dart';
 //part 'ambers_repository.dart';
 
 class SupabaseAmbersRepository implements AmberRepository {
-  const SupabaseAmbersRepository({required this.supabaseClient,required this.user}):super();
+  const SupabaseAmbersRepository(
+      {required this.supabaseClient, required this.user})
+      : super();
   final SupabaseClient supabaseClient;
   final User user;
   //FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   @override
   Future<List<Amber>> fetchAmbers() async {
-    debugPrint('inside loadAmbers');
-     int _noOfAmber = 0;
+    int _noOfAmber = 0;
     List<Amber> amList = [];
-    final int farmId=user.userMetadata?['farm_id'];
-// try {
-//   farmId= user.userMetadata?['farm_id'] ?? 0;
-// }catch(e){
-//   print('error in get farmId ${e.toString()}');
-// }
-print(user.userMetadata?['farm_id'].runtimeType);
-
+    final int farmId = user.userMetadata?['farm_id'];
     try {
       final response =
           await supabaseClient.from('farms').select().eq('id', farmId).single();
 
       _noOfAmber = response['no_of_ambers'];
-      print('in get ambers $response');
+
       amList = [for (var i = 1; i <= _noOfAmber; i++) Amber(id: i)].toList();
     } catch (e) {
       //printError();
@@ -48,10 +42,9 @@ print(user.userMetadata?['farm_id'].runtimeType);
   }
 
   @override
-  Future<String> addDailyData(
-      {required DailyDataModel todayData}) async {
+  Future<String> addDailyData({required DailyDataModel todayData}) async {
     String respone = 'success';
-    final int farmId=user.userMetadata?['farm_id'];
+    final int farmId = user.userMetadata?['farm_id'];
     Map<String, dynamic> map = {
       'farm_id': farmId,
       ...todayData.toSupabasJson(),
@@ -76,19 +69,9 @@ print(user.userMetadata?['farm_id'].runtimeType);
         const ProductionSupabaseTable().outEggsNote: todayData.outEggsNote,
         const ProductionSupabaseTable().death: todayData.death
       }).select();
-
-      //return data.toString();
-      // print('data in supa');
     } on PostgrestException catch (error) {
-      //  Indicator.closeLoading();
-      //print('in postgress Ex ${error.message}');
       throw (error.message);
-      // return error.message;
-      //return error.toString();
     } catch (error) {
-      //print('in postgress Ex2${error.toString()}');
-      //return error.toString();
-      //return error.toString();
       throw (error.toString());
     }
     return respone;
@@ -97,26 +80,20 @@ print(user.userMetadata?['farm_id'].runtimeType);
   @override
   Future<List<DailyDataModel>> getProductionData(
       {required DateTime prodDate}) async {
-    print(prodDate);
     List<DailyDataModel> listData = [];
-    print('in get production$user');
-    print(user.userMetadata?['farm_id']);
-    final int farmId=user.userMetadata?['farm_id'];
+
+    final int farmId = user.userMetadata?['farm_id'];
     try {
       listData = await supabaseClient
           .from(const ProductionSupabaseTable().tableName)
           .select()
           .eq(const ProductionSupabaseTable().prodDate, prodDate)
-          .filter(const ProductionSupabaseTable().farmId, 'eq',farmId)
+          .filter(const ProductionSupabaseTable().farmId, 'eq', farmId)
           .withConverter<List<DailyDataModel>>(
               (data) => DailyDataConverter.toList(data));
-      print(listData);
     } on PostgrestException catch (error) {
-      print('in postgress getdata $error');
       throw PostgrestException;
-      //print(' in postgress ex1 ${error.details}');
     } catch (error) {
-       print(' in error getProduction ${error.toString()}');
       throw (error.toString());
     }
     return listData;

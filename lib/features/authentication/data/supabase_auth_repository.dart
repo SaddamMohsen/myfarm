@@ -40,13 +40,17 @@ class SupabaseAuthRepository extends AuthRepository {
   }
 
   @override
-  Future<void> signOut() {
-    // TODO: implement signOut
+  Future<void> signOut() async {
     try {
-      auth.auth.signOut();
+      await auth.auth.signOut();
     } catch (e) {
+      print(e.toString());
       rethrow;
+    } finally {
+      print('done');
+      // throw 'done';
+      return;
     }
-    throw UnimplementedError();
+    //throw UnimplementedError();
   }
 }

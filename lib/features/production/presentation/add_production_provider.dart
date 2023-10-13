@@ -6,26 +6,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../authentication/presentation/supabase_auth_provider.dart';
 import '../domain/dailydata.dart';
 part 'add_production_provider.g.dart';
+
 //provider to get the list of ambers from the database
 //@Riverpod(keepAlive:true)
-final amberRepositoryProvider =
-    Provider((ref) {
-      final user = ref
-          .watch(supaAuthRepProvider)
-          .currentUser;
-      if (user == null)
-        throw AssertionError('No user Found');
+final amberRepositoryProvider = Provider((ref) {
+  final user = ref.watch(supaAuthRepProvider).currentUser;
+  if (user == null) throw AssertionError('لم تقم بتسجيل الدخول');
 
-     return SupabaseAmbersRepository(
-          supabaseClient: ref.watch(supabaseClientProvider),
-          user: user);
-    });
+  return SupabaseAmbersRepository(
+      supabaseClient: ref.watch(supabaseClientProvider), user: user);
+});
 
-
-@riverpod       //(keepAlive:true)
-Future<List<Amber>> fetchAmbers(
-FetchAmbersRef ref
-)async{
+//provider to get the list of ambers in the farm
+@Riverpod(keepAlive: true)
+Future<List<Amber>> fetchAmbers(FetchAmbersRef ref) async {
   final repository = ref.watch(amberRepositoryProvider);
   return repository.fetchAmbers();
 }
@@ -33,14 +27,13 @@ FetchAmbersRef ref
 //   final repository = ref.watch(amberRepositoryProvider);
 //   return repository.fetchAmbers();
 // });
+
+//provider to fetch the data from database in this date
 @riverpod
-Future<List<DailyDataModel>> fetchProductionData(
-    FetchProductionDataRef ref,{
-      required todayDate
-}
-    )async{
+Future<List<DailyDataModel>> fetchProductionData(FetchProductionDataRef ref,
+    {required todayDate}) async {
   final repository = ref.watch(amberRepositoryProvider);
-  return repository.getProductionData(prodDate: todayDate) ;
+  return repository.getProductionData(prodDate: todayDate);
 }
 //provider to add the production data into the database
 // final productionRepositoryProvider =

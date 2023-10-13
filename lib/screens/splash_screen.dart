@@ -55,11 +55,15 @@ class AnimatedBuilderDemoState extends ConsumerState<SplashScreenAnim>
             data: (data) => {
                   if (data != null)
                     {
-                      Navigator.popAndPushNamed(context, '/homepage'),
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/homepage', (route) => false),
+                      // Navigator.popAndPushNamed(context, '/homepage'),
                       // Navigator.of(context).pushNamed('/homepage')
                     }
                   else
-                    Navigator.popAndPushNamed(context, '/loginpage')
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/loginpage', (route) => false),
+                  //Navigator.popAndPushNamed(context, '/loginpage')
                 },
 
             ///TODO remove print statement
@@ -73,8 +77,7 @@ class AnimatedBuilderDemoState extends ConsumerState<SplashScreenAnim>
           child: SizedBox(
             width: MediaQuery.of(context).size.width / 2,
             height: MediaQuery.of(context).size.height / 2,
-            child: Image.asset(
-                "images/myfarmlogo.png"), // The bird image to animate
+            child: Image.asset("images/logo2.jpg"), // The bird image to animate
           ),
           builder: (BuildContext context, Widget? child) {
             return Transform.rotate(

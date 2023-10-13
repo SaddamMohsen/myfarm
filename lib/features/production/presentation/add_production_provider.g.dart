@@ -6,11 +6,11 @@ part of 'add_production_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchAmbersHash() => r'f25ffab14be3305b9d8e484968ef7054b1e1dd46';
+String _$fetchAmbersHash() => r'8cc8253081b97fbce6bcd5ea65b2f31dc4d17a26';
 
 /// See also [fetchAmbers].
 @ProviderFor(fetchAmbers)
-final fetchAmbersProvider = AutoDisposeFutureProvider<List<Amber>>.internal(
+final fetchAmbersProvider = FutureProvider<List<Amber>>.internal(
   fetchAmbers,
   name: r'fetchAmbersProvider',
   debugGetCreateSourceHash:
@@ -19,7 +19,7 @@ final fetchAmbersProvider = AutoDisposeFutureProvider<List<Amber>>.internal(
   allTransitiveDependencies: null,
 );
 
-typedef FetchAmbersRef = AutoDisposeFutureProviderRef<List<Amber>>;
+typedef FetchAmbersRef = FutureProviderRef<List<Amber>>;
 String _$fetchProductionDataHash() =>
     r'5b6fbac217710a7fd03c5a049d4e53d942b391b8';
 

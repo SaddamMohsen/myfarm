@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:get/get.dart';
-import 'package:json_table/json_table.dart';
+
 import 'package:myfarm/features/production/domain/dailydata.dart';
+import 'package:myfarm/widgets/my_alert_dialog.dart';
 import 'package:myfarm/widgets/my_daily_data_card.dart';
 
 class DailyDataView extends StatelessWidget {
@@ -59,10 +58,10 @@ class DailyDataView extends StatelessWidget {
                     //decoration: BoxDecoration(border: BoxBorder(),  ),
                     child: Wrap(
                         //physics: NeverScrollableScrollPhysics(),
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.start,
                         textDirection: TextDirection.rtl,
                         direction: Axis.horizontal,
-                        alignment: WrapAlignment.center,
+                        alignment: WrapAlignment.start,
                         // runAlignment: WrapAlignment.start,
                         //spacing: 3,
                         runSpacing: 0,
@@ -76,8 +75,9 @@ class DailyDataView extends StatelessWidget {
                                       MediaQuery.of(context).size.width / 2),
                               child: Wrap(
                                 textDirection: TextDirection.rtl,
-                                alignment: WrapAlignment.spaceEvenly,
-                                //runAlignment: WrapAlignment.center,
+                                alignment: WrapAlignment.center,
+                                runAlignment: WrapAlignment.center,
+                                crossAxisAlignment: WrapCrossAlignment.center,
                                 direction: Axis.vertical,
                                 children: [
                                   ClipOval(
@@ -137,60 +137,104 @@ class DailyDataView extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  Card(
-                                    elevation: 5,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'الوفيات',
-                                            style: TextStyle(fontSize: 8.0),
-                                          ),
-                                          Divider(
-                                            thickness: 2,
-                                            color: Colors.lightBlueAccent,
-                                          ),
-                                          Text(
-                                            ' ${data[index].death}',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  MyCard(
-                                    data1: data[index].incomFeed.toString(),
-                                    data2: data[index].intakFeed.toString(),
-                                    title1: 'وارد علف',
-                                    title2: 'مستهلك علف',
-                                  ),
-                                  // MyCard(
-                                  //   data1: data[index].prodTray.toString(),
-                                  //   data2: data[index].prodCarton.toString(),
-                                  //   title1: 'انتاج طبق',
-                                  //   title2: 'انتاج كرتون',
-                                  // ),
-                                  // MyCard(
-                                  //   data1: data[index].outEggsTray.toString(),
-                                  //   data2: data[index].outEggsCarton.toString(),
-                                  //   title1: 'الخارج طبق',
-                                  //   title2: 'الخارج كرتون',
-                                  // ),
-                                  data.isNotEmpty
-                                      ? Card(
+                                  Wrap(
+                                    direction: Axis.horizontal,
+                                    textDirection: TextDirection.rtl,
+                                    children: [
+                                      SizedBox(
+                                        width: 180,
+                                        height: 115,
+                                        child: Card(
                                           elevation: 5,
-                                          child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(5.0),
-                                              child: MyDailyDataCard(
-                                                  data: data[index])))
-                                      : SizedBox(),
-
+                                          child: Column(
+                                            children: [
+                                              const Padding(
+                                                padding: EdgeInsets.all(4.0),
+                                                child: Text('العلف'),
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Card(
+                                                    elevation: 5,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              5.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          const Text(
+                                                            'الوفيات',
+                                                            style: TextStyle(
+                                                                fontSize: 8.0),
+                                                          ),
+                                                          const Divider(
+                                                            thickness: 2,
+                                                            color: Colors
+                                                                .lightBlueAccent,
+                                                          ),
+                                                          Text(
+                                                            ' ${data[index].death}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    color: Colors
+                                                                        .black),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: ((context) =>
+                                                            MyAlertDialog(
+                                                                title:
+                                                                    'حدد البيانات التي تريد تعديلها',
+                                                                content: data[
+                                                                        index]
+                                                                    .toString())),
+                                                      );
+                                                      print(data[index].trId);
+                                                    },
+                                                    child: MyCard(
+                                                      data1: data[index]
+                                                          .incomFeed
+                                                          .toString(),
+                                                      data2: data[index]
+                                                          .intakFeed
+                                                          .toString(),
+                                                      title1: 'الوارد ',
+                                                      title2: 'المستهلك ',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      data.isNotEmpty
+                                          ? Card(
+                                              elevation: 5,
+                                              child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(5.0),
+                                                  child: MyDailyDataCard(
+                                                      data: data[index])))
+                                          : SizedBox(),
+                                    ],
+                                  ),
                                   data[index].outEggsNote != ''
                                       ? Card(
                                           elevation: 5,
@@ -203,7 +247,7 @@ class DailyDataView extends StatelessWidget {
                                                   style:
                                                       TextStyle(fontSize: 8.0),
                                                 ),
-                                                Divider(
+                                                const Divider(
                                                   thickness: 2,
                                                   color: Colors.lightBlueAccent,
                                                 ),
@@ -212,7 +256,7 @@ class DailyDataView extends StatelessWidget {
                                                   softWrap: true,
                                                   overflow:
                                                       TextOverflow.ellipsis,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 8.0),
                                                 ),
@@ -263,14 +307,14 @@ class MyCard extends StatelessWidget {
               children: [
                 Text(
                   title1,
-                  style: TextStyle(fontSize: 8.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 2,
                 ),
                 Text(
                   title2,
-                  style: TextStyle(fontSize: 8.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show Supabase, SupabaseClient, User;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show Supabase, SupabaseClient, User;
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riv;
 import 'package:myfarm/features/authentication/data/supabase_auth_repository.dart';
 
@@ -29,14 +30,20 @@ class AuthController extends _$AuthController {
     //print('state2 :$state');
     return state.hasError == true;
   }
+
   Future<User?> currentUser() async {
     final repository = ref.read(supaAuthRepProvider);
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-            () => Future.value(repository.currentUser));
+    state = await AsyncValue.guard(() => Future.value(repository.currentUser));
     // if (repository.currentUser != null)
     //   return left(repository.currentUser);
     // else
     //   return right('no user');
+  }
+
+  Future<void> signOut() async {
+    final repository = ref.read(supaAuthRepProvider);
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => Future.value(repository.signOut()));
   }
 }

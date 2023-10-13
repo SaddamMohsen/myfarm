@@ -11,7 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
-
+  final ImageProvider image = const AssetImage('images/mag8.jpg');
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
 }
@@ -25,12 +25,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     'password': FormControl<String>(validators: [Validators.required]),
   });
 
+  late ColorScheme currentColorScheme;
   TextEditingController nameController = TextEditingController();
   TextEditingController passController = TextEditingController();
   late User user;
+  bool showPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    currentColorScheme = const ColorScheme.light();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateImage(widget.image);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(currentColorScheme.onPrimary.toString());
     ref.listen<AsyncValue>(
         authControllerProvider,
         (_, state) => state.when(
@@ -71,33 +84,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 setState(() {
                   isLoading = false;
                 }),
-                //if(user.id !=null)
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const MyHomePage(title: 'مزرعتي'))),
-                // Navigator.of(context).pushReplacementNamed(RouteGenerator.homePage,
-                //         arguments: {'title': 'hhhh'})
-                //     .onError((error, stackTrace) =>
-                //         print(' error in routing ${error.toString()}')),
-                // .of(context)
-                //     .pushAndRemoveUntil<void>(
-                //         MaterialPageRoute<void>(
-                //             builder: (context) => MyHomePage(title: 'مزرعتي')),
-                //         ModalRoute.withName('/'))
-                //     .onError((error, stackTrace) => print(error.toString())),
-                // Navigator.pushAndRemoveUntil(
-                //         context,
-                //         MaterialPageRoute(
-                //             builder: (context) => MyHomePage(title: 'مزرعتي')),
-                //         ModalRoute.withName('/'))
-                //     .onError(
-                //         (error, stackTrace) => debugPrint(error.toString())),
-                //  Navigator.of(context).popAndPushNamed(RouteGenerator.homePage),
-                // .pushNamedAndRemoveUntil(
-                //     '/', ModalRoute.withName('/'),
-                //     arguments: {'title': 'مزرعتي'}),
+                if (user.id != null)
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/homepage', (route) => false),
               },
               loading: () => setState(() {
                 isLoading = true;
@@ -106,232 +95,261 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return Scaffold(
       //appBar: appBar(context, 'تسجيل الدخول'),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 100),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Card(
-                  margin: const EdgeInsets.all(30),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      side: BorderSide.none),
-                  //color: Color.fromARGB(255, 234, 238, 240),
-                  elevation: 5,
-                  //shadowColor: Color.fromARGB(179, 208, 224, 223),
-                  child: Image(
-                    image: const AssetImage('images/mag2.png'),
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: MediaQuery.of(context).size.height * 0.3,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  margin: const EdgeInsets.all(5),
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: 60.0,
-                  // decoration: BoxDecoration(
-                  //   border: Border.all(width: 1, color: Colors.black38),
-                  //   borderRadius: BorderRadius.circular(12),
-                  // ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 40.0, vertical: 5.0),
-                  child: ReactiveForm(
-                    formGroup: loginForm,
-                    child: ReactiveTextField(
-                      formControlName: 'email',
-                      validationMessages: {
-                        'required': (error) =>
-                            'لا يمكن الدخول بدون كتابة الايميل',
-                        'email': (error) => 'يرجى كتابة الايميل بشكل صحيح'
-                      },
-                      textInputAction: TextInputAction.next,
-                      showErrors: (control) =>
-                          control.invalid && control.touched && control.dirty,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.email),
-                        contentPadding: EdgeInsets.only(top: 10.0),
-                        hintText: "البريد الالكتروني",
-                        fillColor: Colors.white10,
-                        focusColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 1,
-                              color: Colors.black,
-                              style: BorderStyle.solid),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+        child: Container(
+          padding: const EdgeInsets.only(top: 350),
+          //height: MediaQuery.of(context).size.height * 0.1,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              alignment: Alignment.topCenter,
+              image: AssetImage('images/mag8.jpg'),
+              repeat: ImageRepeat.repeatY,
+              fit: BoxFit.fitWidth,
+              //scale: 0.5,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            child: Container(
+              color: Theme.of(context).colorScheme.background,
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    // SizedBox(
+                    //   width: MediaQuery.of(context).size.width * 0.7,
+                    //   height: MediaQuery.of(context).size.height * 0.3,
+                    // ),
+                    //
+                    // Image(
+                    //   image: const AssetImage('images/mag2.png'),
+                    //   width: MediaQuery.of(context).size.width * 0.7,
+                    //   height: MediaQuery.of(context).size.height * 0.3,
+                    // ),
 
-                /*TextField(
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.email),
-                        contentPadding: EdgeInsets.only(top: 10.0),
-                        hintText: "البريد الالكتروني",
-                        fillColor: Colors.white10,
-                        focusColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 1,
-                              color: Colors.black,
-                              style: BorderStyle.solid),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(12),
-                          ),
-                        ),
-                      ),
-                      controller: emailController,
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                ),*/
-                Container(
-                  margin: const EdgeInsets.all(5),
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: 60.0,
-                  // decoration: BoxDecoration(
-                  //   border: Border.all(width: 1, color: Colors.black38),
-                  //   borderRadius: BorderRadius.circular(12),
-                  // ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 50.0, vertical: 5.0),
-                  child: ReactiveForm(
-                    formGroup: loginForm,
-                    child: ReactiveTextField(
-                      formControlName: 'password',
-                      validationMessages: {
-                        'required': (error) =>
-                            'لا يمكن الدخول بدون كتابة كلمة السر'
-                      },
-                      showErrors: (control) =>
-                          control.invalid && control.touched && control.dirty,
-                      textInputAction: TextInputAction.done,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        contentPadding: EdgeInsets.only(top: 10.0),
-                        hintText: "كلمة السر",
-                        focusColor: Colors.white10,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 1,
-                              color: Colors.black,
-                              style: BorderStyle.solid),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(12),
-                          ),
-                        ),
-                      ),
-                      controller: passController,
-                      obscuringCharacter: "*",
-                    ),
-                  ),
-                ),
-                ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxHeight: 60, maxWidth: 100),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: 60,
-                        child: ReactiveForm(
-                          formGroup: loginForm,
-                          child: ReactiveFormConsumer(
-                              builder: (context, form, child) {
-                            return Container(
-                              padding: const EdgeInsets.all(10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                //textDirection: TextDirection.rtl,
-                                children: [
-                                  Expanded(
-                                    child: !isLoading
-                                        ? ElevatedButton(
-                                            onPressed: () => {
-                                              // print('press'),
-                                              form.unfocus(),
-                                              form.markAllAsTouched(),
-                                              if (form.invalid)
-                                                {
-                                                  if (form
-                                                      .control('email')
-                                                      .invalid)
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(mySnackBar(
-                                                            context,
-                                                            'تأكد من كتابة البريد الالكتروني بشكل صحيح'))
-                                                  else if (form
-                                                      .control('password')
-                                                      .invalid)
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(mySnackBar(
-                                                            context,
-                                                            'تأكد من كتابة كلمة المرور'))
-                                                }
-                                              else
-                                                {
-                                                  ref
-                                                      .read(
-                                                          authControllerProvider
-                                                              .notifier)
-                                                      .login(
-                                                          form
-                                                              .control('email')
-                                                              .value,
-                                                          form
-                                                              .control(
-                                                                  'password')
-                                                              .value),
-                                                  // Navigator.push(
-                                                  //   context,
-                                                  //   MaterialPageRoute(
-                                                  //       builder: (context) =>
-                                                  //           const MyHomePage(title: 'مزرعتي')),
-                                                  // )
-                                                },
-                                            },
-                                            child: const Text("تسجيل الدخول"),
-                                          )
-                                        : ElevatedButton.icon(
-                                            icon: Icon(Icons.login,
-                                                color: Theme.of(context)
-                                                    .primaryColor),
-                                            onPressed: () {},
-                                            label: const Text(
-                                              "...دخول",
-                                              // softWrap: false,
-                                            ),
-                                          ),
-                                  ),
-                                  if (isLoading) ...[
-                                    const SizedBox(width: 4),
-                                    const CircularProgressIndicator(),
-                                  ]
-                                ],
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      height: 60,
+                      // decoration: BoxDecoration(
+                      //   border: Border.all(width: 1, color: Colors.black38),
+                      //   borderRadius: BorderRadius.circular(12),
+                      // ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40.0, vertical: 5.0),
+                      child: ReactiveForm(
+                        formGroup: loginForm,
+                        child: ReactiveTextField(
+                          formControlName: 'email',
+                          validationMessages: {
+                            'required': (error) =>
+                                'لا يمكن الدخول بدون كتابة الايميل',
+                            'email': (error) => 'يرجى كتابة الايميل بشكل صحيح'
+                          },
+                          textInputAction: TextInputAction.next,
+                          // showErrors: (control) =>
+                          //     control.invalid &&
+                          //     control.touched &&
+                          //     control.dirty,
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.email),
+                            contentPadding: EdgeInsets.only(top: 10.0),
+                            hintText: "البريد الالكتروني",
+                            fillColor: Colors.white10,
+                            focusColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 1,
+                                  color: Colors.black,
+                                  style: BorderStyle.solid),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(12),
                               ),
-                            );
-                          }),
+                            ),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ]),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      height: 60.0,
+                      // decoration: BoxDecoration(
+                      //   border: Border.all(width: 1, color: Colors.black38),
+                      //   borderRadius: BorderRadius.circular(12),
+                      // ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 50.0, vertical: 5.0),
+                      child: ReactiveForm(
+                        formGroup: loginForm,
+                        child: Stack(
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ReactiveTextField(
+                                formControlName: 'password',
+                                validationMessages: {
+                                  'required': (error) =>
+                                      'لا يمكن الدخول بدون كتابة كلمة السر'
+                                },
+                                showErrors: (control) =>
+                                    control.invalid &&
+                                    control.touched &&
+                                    control.dirty,
+                                textInputAction: TextInputAction.done,
+                                obscureText: !showPassword,
+                                decoration: const InputDecoration(
+                                  prefixIcon: Icon(Icons.lock),
+                                  contentPadding: EdgeInsets.only(top: 10.0),
+                                  hintText: "كلمة السر",
+                                  focusColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 1,
+                                        color: Colors.black,
+                                        style: BorderStyle.solid),
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                                controller: passController,
+                                obscuringCharacter: "*",
+                              ),
+                              Positioned(
+                                  right: -5,
+                                  top: 0,
+                                  child: IconButton(
+                                    icon: Icon(showPassword == false
+                                        ? Icons.visibility
+                                        : Icons.visibility_off),
+                                    onPressed: () {
+                                      setState(() {
+                                        showPassword = !showPassword;
+                                      });
+                                    },
+                                  )),
+                            ]),
+                      ),
+                    ),
+                    ConstrainedBox(
+                      constraints:
+                          const BoxConstraints(maxHeight: 60, maxWidth: 100),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.4,
+                            height: 60,
+                            child: ReactiveForm(
+                              formGroup: loginForm,
+                              child: ReactiveFormConsumer(
+                                  builder: (context, form, child) {
+                                return Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    //textDirection: TextDirection.rtl,
+                                    children: [
+                                      Expanded(
+                                        child: !isLoading
+                                            ? ElevatedButton(
+                                                onPressed: () => {
+                                                  // print('press'),
+                                                  form.unfocus(),
+                                                  form.markAllAsTouched(),
+                                                  if (form.invalid)
+                                                    {
+                                                      if (form
+                                                          .control('email')
+                                                          .invalid)
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                                mySnackBar(
+                                                                    context,
+                                                                    'تأكد من كتابة البريد الالكتروني بشكل صحيح'))
+                                                      else if (form
+                                                          .control('password')
+                                                          .invalid)
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                                mySnackBar(
+                                                                    context,
+                                                                    'تأكد من كتابة كلمة المرور'))
+                                                    }
+                                                  else
+                                                    {
+                                                      ref
+                                                          .read(
+                                                              authControllerProvider
+                                                                  .notifier)
+                                                          .login(
+                                                              form
+                                                                  .control(
+                                                                      'email')
+                                                                  .value,
+                                                              form
+                                                                  .control(
+                                                                      'password')
+                                                                  .value),
+                                                      // Navigator.push(
+                                                      //   context,
+                                                      //   MaterialPageRoute(
+                                                      //       builder: (context) =>
+                                                      //           const MyHomePage(title: 'مزرعتي')),
+                                                      // )
+                                                    },
+                                                },
+                                                child:
+                                                    const Text("تسجيل الدخول"),
+                                              )
+                                            : ElevatedButton.icon(
+                                                icon: Icon(Icons.login,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onBackground),
+                                                onPressed: () {},
+                                                label: const Text(
+                                                  "...دخول",
+                                                  // softWrap: false,
+                                                ),
+                                              ),
+                                      ),
+                                      if (isLoading) ...[
+                                        const SizedBox(width: 4),
+                                        const CircularProgressIndicator(),
+                                      ]
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]),
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _updateImage(ImageProvider provider) async {
+    final ColorScheme newcolorScheme = await ColorScheme.fromImageProvider(
+        provider: provider, brightness: Brightness.light);
+    setState(() {
+      currentColorScheme = newcolorScheme;
+      print(currentColorScheme.toString());
+    });
   }
 }

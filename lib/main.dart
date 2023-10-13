@@ -16,6 +16,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );*/
   //enitializeintl Package local Date to Arabic
+
   initializeDateFormatting("ar_SA", null);
   try {
     await Supabase.initialize(

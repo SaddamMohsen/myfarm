@@ -50,6 +50,7 @@ dependencies:
   freezed: ^2.4.2
   dartz: ^0.10.1
   easy_date_timeline: ^0.1.1
+  flutter_expandable_fab: ^2.0.0
 
 dev_dependencies:
   build_runner: ^2.4.6
@@ -80,6 +81,13 @@ flutter:
   assets:
       - images/mag1.png
       - images/mag2.png
+      - images/mag3.png
+      - images/mag4.png
+      - images/mag5.png
+      - images/mag6.jpg
+      - images/mag7.jpg
+      - images/mag8.jpg
+      - images/logo2.jpg
       - images/myfarmlogo.png
 
 

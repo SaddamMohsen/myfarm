@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myfarm/features/production/domain/dailydata.dart';
 
+// a widget that show production and remaining eggs by amber
 class MyDailyDataCard extends StatelessWidget {
   const MyDailyDataCard({super.key, required this.data});
   final DailyDataModel data;
@@ -119,11 +120,11 @@ class MyDailyDataCard extends StatelessWidget {
       width: 100,
       height: 80,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onPrimary,
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: Theme.of(context).colorScheme.onPrimary,
+        // color: Theme.of(context).colorScheme.surface,
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -171,7 +172,7 @@ class MyDailyDataCard extends StatelessWidget {
                             data1.toString(),
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 25,
                           ),
                           Text(

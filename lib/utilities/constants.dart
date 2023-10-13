@@ -52,7 +52,7 @@ appBar(BuildContext context, String title) {
 SnackBar mySnackBar(BuildContext context, String message) {
   // print(message);
   return SnackBar(
-    duration: Duration(seconds: 2),
+    duration: Duration(seconds: 3),
     content: Column(children: [
       const Icon(
         Icons.warning_amber_outlined,

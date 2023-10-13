@@ -20,7 +20,7 @@ final supaAuthRepProvider = Provider<SupabaseAuthRepository>.internal(
 );
 
 typedef SupaAuthRepRef = ProviderRef<SupabaseAuthRepository>;
-String _$authControllerHash() => r'ae886dc5acd3c7eb3930ba2feded1015f7cfff37';
+String _$authControllerHash() => r'0d3387c6153145638a75973bdfc1f2b8e924b63b';
 
 /// See also [AuthController].
 @ProviderFor(AuthController)

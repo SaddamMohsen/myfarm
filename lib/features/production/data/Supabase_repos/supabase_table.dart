@@ -21,3 +21,14 @@ class ProductionSupabaseTable implements SupabaseTable {
   String get outEggsCarton => "outCarton";
   String get outEggsNote => "outEggsNote";
 }
+
+class InventoryTable implements SupabaseTable {
+  const InventoryTable();
+  @override
+  String get tableName => 'inventory';
+  String get farmId => "farm_id";
+  String get amberId => 'amber_id';
+  String get itemCode => 'item_code';
+  String get quantity => 'quantity';
+  String get smallQuantity => 'small_quantity';
+}

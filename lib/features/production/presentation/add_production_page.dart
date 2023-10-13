@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:myfarm/features/production/presentation/add_production_provider.dart';
@@ -619,7 +618,13 @@ class InputWidget extends StatelessWidget {
       onChanged: name.name == inputFormControl.outTray.name ||
               name.name == inputFormControl.outCarton.name
           ? (FormControl<dynamic> control) {
-              if (control.value == 0 || control.value == null) {
+              if ((form.control(inputFormControl.outTray.name).value == 0 ||
+                      form.control(inputFormControl.outTray.name).value ==
+                          null) &&
+                  (form.control(inputFormControl.outCarton.name).value == 0 ||
+                      form.control(inputFormControl.outCarton.name).value ==
+                          null) &&
+                  control.value == 0) {
                 form.control('outEggsNote').markAsDisabled();
               } else {
                 form.control('outEggsNote').markAsEnabled();
@@ -633,7 +638,7 @@ class InputWidget extends StatelessWidget {
               if (control.status == ControlStatus.invalid) {
                 form.control(name.name).errors;
                 //control.focus()
-                print('error in ${form.control(name.name).errors}');
+                // print('error in ${form.control(name.name).errors}');
                 ScaffoldMessenger.of(context).showSnackBar(mySnackBar(
                     context, 'قيمة رقمية في حالة لا توجد قيمة أدخل صفر'));
               }
