@@ -1,20 +1,21 @@
 import 'dart:async';
 
-//import 'dart:core';
-
 import 'package:flutter/material.dart';
-//import 'package:get/get.dart';
+
 import 'package:myfarm/features/production/domain/dailydata.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-//import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:myfarm/widgets/indicator.dart';
-//import 'dart:ui';
 
 enum states { Success, Error }
 
 class Amber {
   final int id;
-  const Amber({required this.id});
+  final bool completed;
+  const Amber({required this.id, this.completed = false});
+
+  Amber copyWith({
+    int? id,
+    bool? completed,
+  }) =>
+      Amber(id: id ?? this.id, completed: completed ?? this.completed);
 }
 
 abstract class AmberRepository {
@@ -24,12 +25,12 @@ abstract class AmberRepository {
   Future<List<Amber>> fetchAmbers();
 
   ///Add the daily data of speciefied Amber into the database
-  Future<String> addDailyData(
-      {required DailyDataModel todayData});
+  Future<String> addDailyData({required DailyDataModel todayData});
 
   ///Get the Daily Data of speceified date from DataBase
-  Future<List<DailyDataModel>> getProductionData(
-      {required DateTime prodDate});
+  Future<List<DailyDataModel>> getProductionData({required DateTime prodDate});
+  Future<void> updateDailyData(
+      {required DailyDataModel todayData, required int rowId});
 }
 
 class FackAmbersRepository implements AmberRepository {
@@ -47,8 +48,7 @@ class FackAmbersRepository implements AmberRepository {
   }
 
   @override
-  Future<String> addDailyData(
-      {required DailyDataModel todayData}) async {
+  Future<String> addDailyData({required DailyDataModel todayData}) async {
     debugPrint('inside AddDailyData');
     return "Success";
     // print(todayData);
@@ -59,6 +59,12 @@ class FackAmbersRepository implements AmberRepository {
     // } else {
     //   return states.Error;
     // }
+  }
+
+  @override
+  Future<void> updateDailyData(
+      {required DailyDataModel todayData, required int rowId}) {
+    throw UnimplementedError();
   }
 
   @override

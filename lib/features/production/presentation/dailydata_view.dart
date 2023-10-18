@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:myfarm/features/production/domain/dailydata.dart';
-import 'package:myfarm/widgets/my_alert_dialog.dart';
+
 import 'package:myfarm/widgets/my_daily_data_card.dart';
+import 'package:myfarm/widgets/edit_dialog.dart';
 
 class DailyDataView extends StatelessWidget {
   const DailyDataView({super.key, required this.data});
@@ -198,14 +199,12 @@ class DailyDataView extends StatelessWidget {
                                                       showDialog(
                                                         context: context,
                                                         builder: ((context) =>
-                                                            MyAlertDialog(
+                                                            MyEditDialog(
                                                                 title:
                                                                     'حدد البيانات التي تريد تعديلها',
                                                                 content: data[
-                                                                        index]
-                                                                    .toString())),
+                                                                    index])),
                                                       );
-                                                      print(data[index].trId);
                                                     },
                                                     child: MyCard(
                                                       data1: data[index]

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 //import 'package:myfarm/features/production/presentation/add_production_page.dart';
 import 'package:myfarm/myfarm_theme.dart';
 import 'package:myfarm/routes.dart';
+import 'package:myfarm/utilities/provider_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'apikey.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -26,7 +27,7 @@ void main() async {
   } catch (e) {
     print('error ${e.toString()}');
   }
-  runApp(const ProviderScope(child: MyfarmApp()));
+  runApp( ProviderScope(observers: [Logger()],child: MyfarmApp()));
 }
 
 class MyfarmApp extends StatelessWidget {

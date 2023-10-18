@@ -11,18 +11,20 @@ const kTrayNumberPattern = r'^([0-9]|1[01])$';
 //appBar method
 appBar(BuildContext context, String title) {
   return AppBar(
+    elevation: 0,
+    surfaceTintColor: Theme.of(context).colorScheme.onBackground,
     titleSpacing: 10.0,
     leading: IconButton(
-      icon: const Icon(
+      icon: Icon(
         Icons.navigate_before_rounded,
-        color: kIconColor,
+        color: Theme.of(context).colorScheme.primary,
         size: kIconSize,
       ),
       onPressed: () => {
         Navigator.pop(context),
         // Get.toNamed(RouteGenerator.homePage, arguments: {'title': 'مزرعتي'}),
       },
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context).colorScheme.outline,
     ),
     title: Center(
       child: Text(
@@ -35,9 +37,9 @@ appBar(BuildContext context, String title) {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.account_circle,
-            color: kIconColor,
+            color: Theme.of(context).colorScheme.primary,
             size: kIconSize,
           ),
           tooltip: '',

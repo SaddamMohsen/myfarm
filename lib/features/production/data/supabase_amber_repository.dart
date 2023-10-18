@@ -89,6 +89,7 @@ class SupabaseAmbersRepository implements AmberRepository {
           .select()
           .eq(const ProductionSupabaseTable().prodDate, prodDate)
           .filter(const ProductionSupabaseTable().farmId, 'eq', farmId)
+          .order('amber_id', ascending: true)
           .withConverter<List<DailyDataModel>>(
               (data) => DailyDataConverter.toList(data));
     } on PostgrestException catch (error) {
@@ -97,6 +98,48 @@ class SupabaseAmbersRepository implements AmberRepository {
       throw (error.toString());
     }
     return listData;
+  }
+
+  @override
+  Future<void> updateDailyData(
+      {required DailyDataModel todayData, required int rowId}) async {
+    final int farmId = user.userMetadata?['farm_id'];
+    Map<String, dynamic> map = {
+      'id': rowId,
+      'farm_id': farmId,
+      ...todayData.toSupabasJson(),
+    };
+    // print('in adding data $map');
+    //PostgrestResponse respons; // = 'may success';
+    try {
+      //Indicator.showLoading();
+      final List<Map<String, dynamic>> data = await supabaseClient
+          .from(const ProductionSupabaseTable().tableName)
+          .update({
+            const ProductionSupabaseTable().farmId: map['farm_id'],
+            const ProductionSupabaseTable().amberId: todayData.amberId,
+            const ProductionSupabaseTable().prodDate:
+                toTimestampString(todayData.prodDate.toString()),
+            const ProductionSupabaseTable().incom_feed: todayData.incomFeed,
+            const ProductionSupabaseTable().intak_feed: todayData.intakFeed,
+            const ProductionSupabaseTable().prodTray: todayData.prodTray,
+            const ProductionSupabaseTable().prodCarton: todayData.prodCarton,
+            const ProductionSupabaseTable().outEggsTray: todayData.outEggsTray,
+            const ProductionSupabaseTable().outEggsCarton:
+                todayData.outEggsCarton,
+            const ProductionSupabaseTable().outEggsNote: todayData.outEggsNote,
+            const ProductionSupabaseTable().death: todayData.death
+          })
+          .eq('id', rowId)
+          .select();
+    } on PostgrestException catch (error) {
+      print('error');
+      throw (error.message);
+    } catch (error) {
+      print('error2');
+      throw (error.toString());
+    }
+    return;
   }
 }
  /* await firebaseFirestore

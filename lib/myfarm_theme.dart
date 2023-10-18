@@ -105,7 +105,7 @@ class MyFarmTheme {
           headlineSmall: TextStyle(
             color: Colors.black,
             fontFamily: 'Tajawal',
-            fontSize: 10.0,
+            fontSize: 14.0,
             fontWeight: FontWeight.w200,
           ),
           bodyMedium: TextStyle(

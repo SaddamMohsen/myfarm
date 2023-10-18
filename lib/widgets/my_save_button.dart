@@ -7,8 +7,11 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 import '../features/production/presentation/add_production_notifier.dart';
 
+//Button to save data that can be requested from add_production_page or from Update form model
 class SaveButton extends ConsumerStatefulWidget {
-  const SaveButton({super.key});
+  const SaveButton({super.key, required this.type, this.rowId = 0});
+  final String type;
+  final int rowId;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SaveButtonState();
@@ -36,8 +39,11 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                       TextButton(
                           child: const Text('موافق'),
                           onPressed: () => {
-                                ref.read(resetStepperProvider.notifier).state =
-                                    0,
+                                if (widget.type == "save")
+                                  ref
+                                      .read(resetStepperProvider.notifier)
+                                      .state = 0,
+
                                 Navigator.of(context).pop(),
                                 //ref.read(resetStepperProvider.notifier),
                               }),
@@ -54,14 +60,16 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                       color: Colors.green[500],
                     ),
                     title: const Text('حالة البيانات'),
-                    content: const Text('تم رفع البيانات  بنجاح'),
+                    content: const Text('تم تحديث البيانات  بنجاح'),
                     actions: <Widget>[
                       TextButton(
                           child: const Text('موافق'),
                           onPressed: () => {
+                                if (widget.type == "save")
+                                  ref
+                                      .read(resetStepperProvider.notifier)
+                                      .state = 0,
                                 Navigator.of(context).pop(),
-                                ref.read(resetStepperProvider.notifier).state =
-                                    0,
                               }),
                     ],
                   ),
@@ -74,17 +82,13 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
         builder: (context, snapshot) {
           // Compute whether there is an error state or not.
           // The connectionState check is here to handle when the operation is retried.
-          final isErrored = snapshot.hasError &&
+          bool isErrored = snapshot.hasError &&
               snapshot.connectionState != ConnectionState.waiting;
           final isLoading = snapshot.connectionState == ConnectionState.waiting
               ? true
               : false;
           return ReactiveFormConsumer(
             builder: (context, form, child) {
-              // return Consumer(
-              //   builder: (context, WidgetRef ref, child2) {
-              //     // final insert = ref.watch(productionRepositoryProvider);
-              //     //.addDailyData(todayData, ambId));
               return Container(
                 padding: const EdgeInsets.all(0),
                 child: Row(
@@ -118,16 +122,42 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                                     DailyDataModel todayData =
                                         DailyDataModel.fromJson(form.value);
 
-                                    final future = ref
-                                        .watch(addProductionControllerProvider
-                                            .notifier)
-                                        .addDailyData(todayData)
-                                        .onError((error, stackTrace) =>
-                                            throw AssertionError('error'));
-                                    // insertController;
-                                    setState(() {
-                                      _pendingAddProduction = future;
-                                    });
+                                    if (widget.type == "save") {
+                                      final future = ref
+                                          .read(addProductionControllerProvider
+                                              .notifier)
+                                          .addDailyData(todayData)
+                                          .then((value) => value == false
+                                              ? ref
+                                                  .read(ambersProviderNotifier
+                                                      .notifier)
+                                                  .remove(todayData.amberId
+                                                      .toString())
+                                              : '');
+
+                                      //remove the current ambers from the l
+
+                                      setState(() {
+                                        _pendingAddProduction = future;
+                                      });
+                                    }
+                                    //when request save button for update
+                                    else {
+                                      // print()
+
+                                      final future = ref
+                                          .watch(addProductionControllerProvider
+                                              .notifier)
+                                          .updateDailyData(
+                                              todayData, widget.rowId)
+                                          .onError((error, stackTrace) =>
+                                              throw AssertionError(
+                                                  error.toString()));
+                                      // insertController;
+                                      setState(() {
+                                        _pendingAddProduction = future;
+                                      });
+                                    }
                                   }
                                 },
                                 child: Text(

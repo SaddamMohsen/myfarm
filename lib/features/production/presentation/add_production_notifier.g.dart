@@ -7,7 +7,7 @@ part of 'add_production_notifier.dart';
 // **************************************************************************
 
 String _$addProductionControllerHash() =>
-    r'ae5de3ba8f71c3fbb5a33f18527fc0cf3a943567';
+    r'cb18e7861b37862c76cd76179d261876a60f3f3f';
 
 /// See also [AddProductionController].
 @ProviderFor(AddProductionController)

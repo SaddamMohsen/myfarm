@@ -34,4 +34,12 @@ class AddProductionController extends _$AddProductionController {
         () => productionRepository.addDailyData(todayData: todayData));
     return state.hasError == true;
   }
+  Future<bool> updateDailyData(DailyDataModel todayData,int rowId) async {
+    final productionRepository = ref.read(productionRepositoryProvider);
+    state = const AsyncValue.loading();
+
+    state = await AsyncValue.guard(
+            () => productionRepository.updateDailyData(todayData: todayData,rowId:rowId));
+    return state.hasError == true;
+  }
 }
