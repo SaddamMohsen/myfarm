@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfarm/bootstrap.dart';
 
 //  import 'package:firebase_core/firebase_core.dart';
 //  import 'firebase_options.dart';
 //import 'package:myfarm/features/production/presentation/add_production_page.dart';
-import 'package:myfarm/myfarm_theme.dart';
-import 'package:myfarm/routes.dart';
-import 'package:myfarm/utilities/provider_logger.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'apikey.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:myfarm/config/myfarm_theme.dart';
+import 'package:myfarm/config/routes.dart';
+//import 'package:myfarm/config/provider_logger.dart';
+//import 'package:supabase_flutter/supabase_flutter.dart';
+
+//import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   /* WidgetsFlutterBinding.ensureInitialized();
@@ -18,16 +19,10 @@ void main() async {
   );*/
   //enitializeintl Package local Date to Arabic
 
-  initializeDateFormatting("ar_SA", null);
-  try {
-    await Supabase.initialize(
-      url: supabase_url,
-      anonKey: supabase_anonkey,
-    );
-  } catch (e) {
-    print('error ${e.toString()}');
-  }
-  runApp( ProviderScope(observers: [Logger()],child: MyfarmApp()));
+  // initializeDateFormatting("ar_SA", null);
+
+  runApp(UncontrolledProviderScope(
+      container: await bootstrap(), child: const MyfarmApp()));
 }
 
 class MyfarmApp extends StatelessWidget {
@@ -39,7 +34,10 @@ class MyfarmApp extends StatelessWidget {
     return MaterialApp(
       title: 'مزرعتي',
       locale: const Locale('ar_SA'),
+      themeMode: ThemeMode.system,
       theme: MyFarmTheme.lightTheme,
+      darkTheme: MyFarmTheme.darktTheme,
+
       // home: const MyHomePage(
       //   title: 'مزرعتي',
       // ),

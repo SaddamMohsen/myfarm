@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfarm/features/authentication/application/supabase_auth_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../routes.dart';
+import '../config/routes.dart';
 
 const Color kIconColor = Color.fromARGB(255, 63, 137, 248);
 const double kIconSize = 40.0;
@@ -16,12 +19,12 @@ appBar(BuildContext context, String title) {
     titleSpacing: 10.0,
     leading: IconButton(
       icon: Icon(
-        Icons.navigate_before_rounded,
+        Icons.manage_search,
         color: Theme.of(context).colorScheme.primary,
         size: kIconSize,
       ),
       onPressed: () => {
-        Navigator.pop(context),
+        // Navigator.pop(context),
         // Get.toNamed(RouteGenerator.homePage, arguments: {'title': 'مزرعتي'}),
       },
       color: Theme.of(context).colorScheme.outline,
@@ -37,13 +40,24 @@ appBar(BuildContext context, String title) {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: IconButton(
+          tooltip: 'مزرعة رقم',
           icon: Icon(
             Icons.account_circle,
             color: Theme.of(context).colorScheme.primary,
             size: kIconSize,
           ),
-          tooltip: '',
-          onPressed: () => {},
+          onPressed: () => {
+            //print('hhh'),
+            // Consumer(builder: (context, ref, child) {
+            //   final User user = ref
+            //       .read(authControllerProvider.notifier)
+            //       .currentUser() as User;
+
+            //   print(user);
+            //   return Text(user?.userMetadata?['farm_id'].toString() ?? '');
+            // }),
+            // return Text('dd');
+          },
         ),
       ),
     ],
@@ -54,7 +68,8 @@ appBar(BuildContext context, String title) {
 SnackBar mySnackBar(BuildContext context, String message) {
   // print(message);
   return SnackBar(
-    duration: Duration(seconds: 3),
+    behavior: SnackBarBehavior.fixed,
+    duration: Duration(seconds: 2),
     content: Column(children: [
       const Icon(
         Icons.warning_amber_outlined,
@@ -78,10 +93,11 @@ SnackBar mySnackBar(BuildContext context, String message) {
 InputDecoration customeInputDecoration(BuildContext context, String label) {
   return InputDecoration(
     label: Text(label, style: Theme.of(context).textTheme.bodySmall),
-    fillColor: Colors.white54,
+    fillColor: Theme.of(context).colorScheme.outline,
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(5),
-      borderSide: const BorderSide(color: Colors.red, width: 1.0),
+      borderSide:
+          BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.0),
     ),
     filled: true,
   );

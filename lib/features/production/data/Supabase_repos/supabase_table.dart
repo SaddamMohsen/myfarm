@@ -32,3 +32,21 @@ class InventoryTable implements SupabaseTable {
   String get quantity => 'quantity';
   String get smallQuantity => 'small_quantity';
 }
+
+class ItemsTable implements SupabaseTable {
+  const ItemsTable();
+  @override
+  String get tableName => 'items';
+  String get itemCode => "item_code";
+  String get itemName => 'item_name';
+}
+
+class ItemsMovementTable implements SupabaseTable {
+  const ItemsMovementTable();
+  @override
+  String get tableName => 'items_movement';
+  String get farmId => "farm_id";
+  String get amberId => 'amber_id';
+  String get itemCode => 'item_code';
+  String get quantity => 'quantity';
+}

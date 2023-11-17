@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:myfarm/features/authentication/presentation/supabase_auth_provider.dart';
-import 'package:myfarm/routes.dart';
-import 'package:myfarm/screens/home_page.dart';
+import 'package:myfarm/features/authentication/application/supabase_auth_provider.dart';
+import 'package:myfarm/config/routes.dart';
+import 'package:myfarm/features/home/presentation/screen/home_page.dart';
 import 'package:myfarm/utilities/constants.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:riverpod/riverpod.dart';
@@ -43,7 +43,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(currentColorScheme.onPrimary.toString());
     ref.listen<AsyncValue>(
         authControllerProvider,
         (_, state) => state.when(
@@ -77,17 +76,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 );
               },
-              data: (data) => {
-                user = data,
-                // print('in data'),
-                // print(user.userMetadata),
-                setState(() {
-                  isLoading = false;
-                }),
-                if (user.id != null)
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/homepage', (route) => false),
-              },
+              data: (data) => data != null
+                  ? {
+                      user = data,
+                      // print('in data'),
+                      // print(user.userMetadata),
+                      setState(() {
+                        isLoading = false;
+                      }),
+                      if (user.id.isNotEmpty)
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/homepage', (route) => false),
+                    }
+                  : '',
               loading: () => setState(() {
                 isLoading = true;
               }),
@@ -113,24 +114,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               topRight: Radius.circular(20),
             ),
             child: Container(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.onBackground,
               height: MediaQuery.of(context).size.height * 0.6,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    // SizedBox(
-                    //   width: MediaQuery.of(context).size.width * 0.7,
-                    //   height: MediaQuery.of(context).size.height * 0.3,
-                    // ),
-                    //
-                    // Image(
-                    //   image: const AssetImage('images/mag2.png'),
-                    //   width: MediaQuery.of(context).size.width * 0.7,
-                    //   height: MediaQuery.of(context).size.height * 0.3,
-                    // ),
-
                     const SizedBox(
                       height: 10,
                     ),
@@ -199,9 +189,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       'لا يمكن الدخول بدون كتابة كلمة السر'
                                 },
                                 showErrors: (control) =>
-                                    control.invalid &&
-                                    control.touched &&
-                                    control.dirty,
+                                    control.invalid && control.dirty,
                                 textInputAction: TextInputAction.done,
                                 obscureText: !showPassword,
                                 decoration: const InputDecoration(
@@ -349,7 +337,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         provider: provider, brightness: Brightness.light);
     setState(() {
       currentColorScheme = newcolorScheme;
-      print(currentColorScheme.toString());
+      //print(currentColorScheme.toString());
     });
   }
 }
