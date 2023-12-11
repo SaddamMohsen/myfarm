@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfarm/features/common/presentation/widget/my_button.dart';
+import 'package:myfarm/features/home/application/fetch_production_data.dart';
 import 'package:myfarm/features/production/application/add_production_provider.dart';
 import 'package:myfarm/features/production/domain/entities/dailydata.dart';
 import 'package:myfarm/features/common/presentation/widget/my_alert_dialog.dart';
+import 'package:myfarm/utilities/form_model.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 import '../../../production/application/add_production_notifier.dart';
@@ -22,73 +24,87 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
   Future<void>? _pendingAddProduction;
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue>(
-        addProductionControllerProvider,
-        (_, state) => state.unwrapPrevious().when(
-              error: (error, stackTrace) {
-                showDialog<void>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    icon: const Icon(
-                      Icons.warning,
-                      size: 50,
-                      color: Color.fromARGB(255, 240, 52, 77),
-                    ),
-                    title: const Text('خطأ'),
-                    content: Text(
-                      'للأسف حدث خطأ اثناء رفع البيانات \n  بيانات الخطأ\n ${error.toString()}\n ',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                    actions: <Widget>[
-                      Center(
-                        child: MyButton(
-                            lable: 'إغلاق',
-                            onTap: () => {
-                                  if (widget.type == "save")
-                                    ref
-                                        .read(resetStepperProvider.notifier)
-                                        .state = 0,
+    ref.listen<AsyncValue<DailyDataModel?>>(addProductionControllerProvider,
+        (previous, next) {
+      next.maybeWhen(
+        data: (data) {
+          if (data == null) return;
+          showDialog<void>(
+            context: context,
+            builder: (context) => AlertDialog(
+              icon: Icon(
+                Icons.thumb_up_rounded,
+                color: Colors.green[500],
+              ),
+              title: const Text('حالة البيانات'),
+              content: const Text(
+                'تم تحديث البيانات  بنجاح',
+                textAlign: TextAlign.center,
+              ),
+              actions: <Widget>[
+                Center(
+                  child: MyButton(
+                      lable: 'موافق',
+                      onTap: () => {
+                            if (widget.type == "save")
+                              {
+                                ref
+                                    .read(ambersProviderNotifier.notifier)
+                                    .remove(data.amberId.toString()),
+                                ref.read(resetStepperProvider.notifier).state =
+                                    0,
+                                form
+                                    .control('amber_id')
+                                    .reset(value: data.amberId),
+                              }
+                            else if (widget.type == "update")
+                              {form.unfocus(), form.reset()},
+                            ref.refresh(fetchProductionDataProvider(
+                                todayDate: data.prodDate)),
+                            Navigator.of(context).pop(),
+                          }),
+                ),
+              ],
+            ),
+          );
+        },
+        error: (error, stackTrace) {
+          showDialog<void>(
+            context: context,
+            builder: (context) => AlertDialog(
+              icon: const Icon(
+                Icons.warning,
+                size: 50,
+                color: Color.fromARGB(255, 240, 52, 77),
+              ),
+              title: const Text('خطأ'),
+              content: Text(
+                'للأسف حدث خطأ اثناء رفع البيانات \n  بيانات الخطأ\n ${error.toString()}\n ',
+                style: Theme.of(context).textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              actions: <Widget>[
+                Center(
+                  child: MyButton(
+                      lable: 'إغلاق',
+                      onTap: () => {
+                            if (widget.type == "save")
+                              ref.read(resetStepperProvider.notifier).state = 0,
 
-                                  Navigator.of(context).pop(),
-                                  //ref.read(resetStepperProvider.notifier),
-                                }),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              data: (data) {
-                showDialog<void>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    icon: Icon(
-                      Icons.thumb_up_rounded,
-                      color: Colors.green[500],
-                    ),
-                    title: const Text('حالة البيانات'),
-                    content: const Text(
-                      'تم تحديث البيانات  بنجاح',
-                      textAlign: TextAlign.center,
-                    ),
-                    actions: <Widget>[
-                      Center(
-                        child: MyButton(
-                            lable: 'موافق',
-                            onTap: () => {
-                                  if (widget.type == "save")
-                                    ref
-                                        .read(resetStepperProvider.notifier)
-                                        .state = 0,
-                                  Navigator.of(context).pop(),
-                                }),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              loading: () => const CircularProgressIndicator(),
-            ));
+                            Navigator.of(context).pop(),
+                            //ref.read(resetStepperProvider.notifier),
+                          }),
+                ),
+              ],
+            ),
+          );
+        },
+        loading: () => const CircularProgressIndicator(),
+        orElse: () {
+          print('in or else');
+        },
+      );
+    });
     return FutureBuilder(
         future: _pendingAddProduction,
         builder: (context, snapshot) {
@@ -120,7 +136,9 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                                             ? Theme.of(context)
                                                 .colorScheme
                                                 .error
-                                            : null,
+                                            : Theme.of(context)
+                                                .colorScheme
+                                                .surface,
                                       ),
                                     ),
                                 onPressed: () {
@@ -142,31 +160,14 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                                       final future = ref
                                           .read(addProductionControllerProvider
                                               .notifier)
-                                          .addDailyData(todayData)
-                                          .then((value) => value == false
-                                              ? {
-                                                  //remove the amber from the dropDown list
-                                                  ref
-                                                      .read(
-                                                          ambersProviderNotifier
-                                                              .notifier)
-                                                      .remove(todayData.amberId
-                                                          .toString()),
-
-                                                  //reset the dropdown list
-                                                  form
-                                                      .control('amber_id')
-                                                      .value = -1,
-                                                }
-                                              : '');
-
-                                      //remove the current ambers from the l
+                                          .addDailyData(todayData);
 
                                       setState(() {
                                         _pendingAddProduction = future;
                                       });
                                     }
-                                    //when request save button for update
+
+                                    /// when request save button for update
                                     else {
                                       // print()
 
@@ -174,20 +175,8 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                                           .watch(addProductionControllerProvider
                                               .notifier)
                                           .updateDailyData(
-                                              todayData, widget.rowId)
-                                          .then((value) => value == false
-                                              ? {
-                                                  // print('reset form'),
-                                                  form.unfocus(),
-                                                  form.reset()
+                                              todayData, widget.rowId);
 
-                                                  // formGroup.reset(updateParent: true)
-                                                }
-                                              : {})
-                                          .onError((error, stackTrace) =>
-                                              throw AssertionError(
-                                                  error.toString()));
-                                      // insertController;
                                       setState(() {
                                         _pendingAddProduction = future;
                                       });
@@ -196,12 +185,10 @@ class _SaveButtonState extends ConsumerState<SaveButton> {
                                 },
                                 child: Text(
                                   'حفظ البيانات',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(color: Colors.black),
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               )
+                            //if isloading is true then show laoding icon
                             : const SizedBox(),
                       ),
                       if (snapshot.connectionState ==

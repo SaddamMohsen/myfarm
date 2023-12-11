@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myfarm/features/authentication/application/supabase_auth_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../config/routes.dart';
 
 const Color kIconColor = Color.fromARGB(255, 63, 137, 248);
 const double kIconSize = 40.0;
 const Color kInputTextColor =
     Color(0xffF3F6FC); //Color.fromARGB(255, 253, 251, 251);
 const kTrayNumberPattern = r'^([0-9]|1[01])$';
+
+//report type
+enum reportType { monthly, daily, amberMonthly }
+
+//NETWORK STATUS
+enum NetworkStatus { NotDetermined, On, Off }
 
 //appBar method
 appBar(BuildContext context, String title) {
@@ -68,22 +69,18 @@ appBar(BuildContext context, String title) {
 SnackBar mySnackBar(BuildContext context, String message) {
   // print(message);
   return SnackBar(
+    elevation: 7,
     behavior: SnackBarBehavior.fixed,
-    duration: Duration(seconds: 2),
+    duration: const Duration(seconds: 2),
     content: Column(children: [
-      const Icon(
-        Icons.warning_amber_outlined,
-        color: Colors.red,
-      ),
+      Icon(Icons.warning_amber_outlined,
+          color: Theme.of(context).colorScheme.error),
       const SizedBox(
         height: 10,
       ),
       Text(
         message,
         textAlign: TextAlign.center,
-        // style: Theme.of(context).textTheme.titleSmall?.copyWith(
-        //       color: Color.fromARGB(255, 255, 255, 255),
-        //     ),
       ),
     ]),
   );
@@ -93,11 +90,11 @@ SnackBar mySnackBar(BuildContext context, String message) {
 InputDecoration customeInputDecoration(BuildContext context, String label) {
   return InputDecoration(
     label: Text(label, style: Theme.of(context).textTheme.bodySmall),
-    fillColor: Theme.of(context).colorScheme.outline,
+    fillColor: Theme.of(context).colorScheme.surface.withAlpha(200),
     errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: BorderRadius.circular(3),
       borderSide:
-          BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.0),
+          BorderSide(color: Theme.of(context).colorScheme.error, width: 1.0),
     ),
     filled: true,
   );

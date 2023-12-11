@@ -11,6 +11,11 @@ class DailyDataConverter {
         .toList();
   }
 
+  static DailyDataModel toSingle(dynamic data) {
+    return DailyDataModel.fromSupabaseJson(
+        (data as List).first as Map<String, dynamic>);
+  }
+
 //return items as list
   static List<Item> itemtoList(dynamic data) {
     return (data as List<dynamic>)

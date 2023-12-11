@@ -1,8 +1,5 @@
-import 'package:dartz/dartz.dart';
-import 'package:dartz/dartz_unsafe.dart';
 import 'package:myfarm/config/provider.dart';
 import 'package:myfarm/features/authentication/application/supabase_auth_provider.dart';
-import 'package:myfarm/features/common/domain/failure.dart';
 import 'package:myfarm/features/production/domain/entities/items_movement.dart';
 import 'package:myfarm/features/production/infrastructur/repositories/supabase_amber_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,6 +15,7 @@ final repositoryProvider = Provider.autoDispose((ref) {
       supabaseClient: ref.watch(supabaseClientProvider), user: user);
 });
 
+///insert out Items provider
 @riverpod
 class InsertOutItemsController extends _$InsertOutItemsController {
   @override
@@ -28,8 +26,7 @@ class InsertOutItemsController extends _$InsertOutItemsController {
   ///
   Future<bool> handle(List<ItemsMovement> outData) async {
     state = const AsyncValue.loading();
-    // final res =
-    //     await ref.read(repositoryProvider).insertOutItems(itemsData: outData);
+
     final repository = ref.read(repositoryProvider);
     try {
       state = await AsyncValue.guard(

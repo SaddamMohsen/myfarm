@@ -56,8 +56,9 @@ class SupabaseAmbersRepository implements FarmRepository {
   }
 
   @override
-  Future<String> addDailyData({required DailyDataModel todayData}) async {
-    String respone = 'success';
+  Future<Either<Failure, DailyDataModel>> addDailyData(
+      {required DailyDataModel todayData}) async {
+    // String respone = 'success';
     final int farmId = user.userMetadata?['farm_id'];
     Map<String, dynamic> map = {
       'farm_id': farmId,
@@ -67,28 +68,36 @@ class SupabaseAmbersRepository implements FarmRepository {
     //PostgrestResponse respons; // = 'may success';
     try {
       //Indicator.showLoading();
-      final List<Map<String, dynamic>> data = await supabaseClient
+      final res = await supabaseClient
           .from(const ProductionSupabaseTable().tableName)
           .insert({
-        const ProductionSupabaseTable().farmId: map['farm_id'],
-        const ProductionSupabaseTable().amberId: todayData.amberId,
-        const ProductionSupabaseTable().prodDate:
-            toTimestampString(todayData.prodDate.toString()),
-        const ProductionSupabaseTable().incom_feed: todayData.incomFeed,
-        const ProductionSupabaseTable().intak_feed: todayData.intakFeed,
-        const ProductionSupabaseTable().prodTray: todayData.prodTray,
-        const ProductionSupabaseTable().prodCarton: todayData.prodCarton,
-        const ProductionSupabaseTable().outEggsTray: todayData.outEggsTray,
-        const ProductionSupabaseTable().outEggsCarton: todayData.outEggsCarton,
-        const ProductionSupabaseTable().outEggsNote: todayData.outEggsNote,
-        const ProductionSupabaseTable().death: todayData.death
-      }).select();
+            const ProductionSupabaseTable().farmId: map['farm_id'],
+            const ProductionSupabaseTable().amberId: todayData.amberId,
+            const ProductionSupabaseTable().prodDate:
+                toTimestampString(todayData.prodDate.toString()),
+            const ProductionSupabaseTable().incom_feed: todayData.incomFeed,
+            const ProductionSupabaseTable().intak_feed: todayData.intakFeed,
+            const ProductionSupabaseTable().prodTray: todayData.prodTray,
+            const ProductionSupabaseTable().prodCarton: todayData.prodCarton,
+            const ProductionSupabaseTable().outEggsTray: todayData.outEggsTray,
+            const ProductionSupabaseTable().outEggsCarton:
+                todayData.outEggsCarton,
+            const ProductionSupabaseTable().outEggsNote: todayData.outEggsNote,
+            const ProductionSupabaseTable().death: todayData.death
+          })
+          .select()
+          .withConverter(DailyDataConverter.toSingle);
+      print('in repos $res');
+      return right(res);
     } on PostgrestException catch (error) {
-      throw (error.message);
+      print('error in add production ${error.message}');
+      return left(Failure.unprocessableEntity(message: error.message));
+      //throw (error.message);
     } catch (error) {
-      throw (error.toString());
+      print('error in add production2 ${error.toString()}');
+      return left(Failure.unprocessableEntity(message: error.toString()));
+      //throw (error.toString());
     }
-    return respone;
   }
 
   @override
@@ -106,7 +115,7 @@ class SupabaseAmbersRepository implements FarmRepository {
           .order('amber_id', ascending: true)
           .withConverter<List<DailyDataModel>>(
               (data) => DailyDataConverter.toList(data));
-    } on PostgrestException catch (error) {
+    } on PostgrestException {
       throw PostgrestException;
     } catch (error) {
       throw (error.toString());
@@ -153,7 +162,7 @@ class SupabaseAmbersRepository implements FarmRepository {
   }
 
   @override
-  Future<void> updateDailyData(
+  Future<Either<Failure, DailyDataModel>> updateDailyData(
       {required DailyDataModel todayData, required int rowId}) async {
     final int farmId = user.userMetadata?['farm_id'];
     Map<String, dynamic> map = {
@@ -165,7 +174,7 @@ class SupabaseAmbersRepository implements FarmRepository {
     //PostgrestResponse respons; // = 'may success';
     try {
       //Indicator.showLoading();
-      await supabaseClient
+      final res = await supabaseClient
           .from(const ProductionSupabaseTable().tableName)
           .update({
             const ProductionSupabaseTable().farmId: map['farm_id'],
@@ -183,13 +192,16 @@ class SupabaseAmbersRepository implements FarmRepository {
             const ProductionSupabaseTable().death: todayData.death
           })
           .eq('id', rowId)
-          .select();
+          .select()
+          .withConverter(DailyDataConverter.toSingle);
+      print('in upda $res');
+      return right(res);
     } on PostgrestException catch (error) {
-      throw (error.message);
+      return left(Failure.unprocessableEntity(message: error.message));
+      //throw (error.message);
     } catch (error) {
-      throw (error.toString());
+      return left(Failure.unprocessableEntity(message: error.toString()));
     }
-    return;
   }
 }
  /* await firebaseFirestore

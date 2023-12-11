@@ -114,9 +114,9 @@ class MyDailyDataCard extends StatelessWidget {
     );
   }
 
-  Container eggCard(
+  SizedBox eggCard(
       BuildContext context, String title1, String data1, String data2) {
-    return Container(
+    return SizedBox(
       width: 100,
       height: 80,
       // decoration: BoxDecoration(

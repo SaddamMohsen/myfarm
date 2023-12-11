@@ -1,12 +1,14 @@
-import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
+import 'package:myfarm/config/provider.dart';
 
 import 'dart:math' as math;
 
 import 'package:myfarm/features/authentication/application/supabase_auth_provider.dart';
+import 'package:myfarm/features/common/application/network_provider.dart';
+import 'package:myfarm/features/common/presentation/widget/my_button.dart';
 
 class SplashScreenAnim extends ConsumerStatefulWidget {
   const SplashScreenAnim({super.key});
@@ -31,12 +33,46 @@ class AnimatedBuilderDemoState extends ConsumerState<SplashScreenAnim>
 
     _controller.forward().then((value) async {
       // Start the animation and when it's finished, pop the current screen
-      ref.read(authControllerProvider.notifier).currentSession();
+
+      var res = await ref.read(networkAwareProvider);
+      print('CONNECET RESULT IS INIT STATE $res');
+      if (res == NetworkStatus.On) {
+        ref.read(authControllerProvider.notifier).currentSession();
+      } else {
+        // ignore: use_build_context_synchronously
+        showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            icon: const Icon(
+              Icons.warning,
+              size: 50,
+              color: Color.fromARGB(255, 240, 52, 77),
+            ),
+            title: const Text('خطأ'),
+            content: Text(
+              'تأكد من اتصالك بالانترنت',
+              style: Theme.of(context).textTheme.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
+            actions: <Widget>[
+              Center(
+                child: MyButton(
+                    lable: 'إغلاق',
+                    onTap: () => {
+                          Navigator.of(context).pop(),
+                          ref.read(networkAwareProvider),
+                        }),
+              ),
+            ],
+          ),
+        );
+      }
     });
   }
 
   @override
   void dispose() {
+    _controller.reset();
     _controller
         .dispose(); // Dispose of the animation controller when the widget is removed from the tree
     super.dispose();
@@ -48,12 +84,33 @@ class AnimatedBuilderDemoState extends ConsumerState<SplashScreenAnim>
         authControllerProvider,
         (_, state) => state.when(
             error: (error, stackTrace) {
-              // if (kDebugMode) {
-              print(error);
-              //}
+              showDialog(
+                context: context,
+                builder: (builder) => AlertDialog(
+                  icon: const Icon(
+                    Icons.warning,
+                    size: 50,
+                    color: Color.fromARGB(255, 240, 52, 77),
+                  ),
+                  title: const Text('خطأ'),
+                  content: Text(
+                    'للأسف هناك خطأ  \n  بيانات الخطأ\n ${error.toString()}\n ',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  actions: <Widget>[
+                    Center(
+                      child: MyButton(
+                          lable: 'إغلاق',
+                          onTap: () => {
+                                Navigator.of(context).pop(),
+                              }),
+                    ),
+                  ],
+                ),
+              );
             },
             data: (data) => {
-                  print(data),
                   if (data != null)
                     {
                       Navigator.pushNamedAndRemoveUntil(
@@ -63,9 +120,7 @@ class AnimatedBuilderDemoState extends ConsumerState<SplashScreenAnim>
                     Navigator.pushNamedAndRemoveUntil(
                         context, '/loginpage', (route) => false),
                 },
-
-            ///TODO remove print statement
-            loading: () => {print('loading')}));
+            loading: () => const CircularProgressIndicator()));
     return Scaffold(
       body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -94,7 +149,7 @@ class AnimatedBuilderDemoState extends ConsumerState<SplashScreenAnim>
               colors: [Color(0xFF0089CF), Color(0xFF00CDBA)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-            ).createShader(bounds);
+            ).createShader(bounds, textDirection: TextDirection.rtl);
           },
           child: Text(
             "جاري فتح التطبيق",
@@ -103,6 +158,12 @@ class AnimatedBuilderDemoState extends ConsumerState<SplashScreenAnim>
             textAlign: TextAlign.center,
           ),
         ),
+        // Text(
+        //   "جاري فتح التطبيق",
+        //   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        //       fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+        //   textAlign: TextAlign.center,
+        // ),
       ])),
     );
   }

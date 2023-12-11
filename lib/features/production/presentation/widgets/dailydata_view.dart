@@ -51,7 +51,7 @@ class DailyDataView extends StatelessWidget {
                   return Container(
                     // alignment: Alignment.centerLeft,
                     decoration: BoxDecoration(
-                        color: Color.fromARGB(153, 238, 243, 245),
+                        color: const Color.fromARGB(153, 238, 243, 245),
                         borderRadius: BorderRadius.circular(20)),
 
                     padding: const EdgeInsetsDirectional.all(3.0),
@@ -157,7 +157,7 @@ class DailyDataView extends StatelessWidget {
                                                       .textTheme
                                                       .bodySmall,
                                                 ),
-                                                Icon(
+                                                const Icon(
                                                   Icons
                                                       .arrow_circle_down_rounded,
                                                   size: 20,
@@ -255,7 +255,7 @@ class DailyDataView extends StatelessWidget {
                                                       const EdgeInsets.all(5.0),
                                                   child: MyDailyDataCard(
                                                       data: data[index])))
-                                          : SizedBox(),
+                                          : const SizedBox(),
                                     ],
                                   ),
                                   data[index].outEggsNote != ''
@@ -287,7 +287,7 @@ class DailyDataView extends StatelessWidget {
                                             ),
                                           ),
                                         )
-                                      : SizedBox.shrink(),
+                                      : const SizedBox.shrink(),
                                 ],
                               ),
                             ),
@@ -330,18 +330,18 @@ class MyCard extends StatelessWidget {
               children: [
                 Text(
                   title1,
-                  style: TextStyle(fontSize: 10.0),
+                  style: const TextStyle(fontSize: 10.0),
                 ),
                 const SizedBox(
                   width: 2,
                 ),
                 Text(
                   title2,
-                  style: TextStyle(fontSize: 10.0),
+                  style: const TextStyle(fontSize: 10.0),
                 ),
               ],
             ),
-            Divider(
+            const Divider(
               thickness: 2,
               color: Colors.lightBlueAccent,
             ),
@@ -351,16 +351,16 @@ class MyCard extends StatelessWidget {
               textDirection: TextDirection.rtl,
               verticalDirection: VerticalDirection.down,
               children: [
-                Text(' ${data1}'),
-                SizedBox(
+                Text(' $data1'),
+                const SizedBox(
                   width: 15,
                 ),
-                Divider(
+                const Divider(
                   thickness: 10,
                   color: Colors.lightBlueAccent,
                   height: 1,
                 ),
-                Text(' ${data2}'),
+                Text(' $data2'),
               ],
             ),
           ],

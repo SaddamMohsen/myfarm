@@ -1,3 +1,4 @@
+import 'package:myfarm/features/report/domain/entities/amber_month_report.dart';
 import 'package:myfarm/features/report/domain/entities/dailyreport.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:myfarm/config/provider.dart';
@@ -15,9 +16,27 @@ final reportRepositoryProvider = Provider.autoDispose((ref) {
       supabaseClient: ref.watch(supabaseClientProvider), user: user);
 });
 
+///get report for one amber only that speciefied by amberId
 @riverpod
 Future<DailyReport> amberReport(AmberReportRef ref,
     {required int amberId, required DateTime repDate}) {
   final repository = ref.watch(reportRepositoryProvider);
   return repository.getDailyRepByAmber(amberId, repDate);
+}
+
+///return daily report of all ambers in the farm only one day
+@riverpod
+Future<List<DailyReport>> farmReport(FarmReportRef ref,
+    {required DateTime repDate}) {
+  final repository = ref.watch(reportRepositoryProvider);
+  return repository.getDailyRepByFarm(repDate);
+}
+
+///return monthly report of amber day by day
+///
+@riverpod
+Future<List<AmberMonthlyReport>> amberMonthReport(AmberMonthReportRef ref,
+    {required int amberId, required DateTime repDate}) {
+  final repository = ref.watch(reportRepositoryProvider);
+  return repository.getMonthlyRepByAmber(amberId, repDate);
 }

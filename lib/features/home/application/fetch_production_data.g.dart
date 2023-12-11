@@ -7,7 +7,7 @@ part of 'fetch_production_data.dart';
 // **************************************************************************
 
 String _$fetchProductionDataHash() =>
-    r'65bedd521c0b57c74ece2e4fa6f7499411a5942d';
+    r'fe0301010a94c764d82660c18cd24c87db73409f';
 
 /// Copied from Dart SDK
 class _SystemHash {

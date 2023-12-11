@@ -111,7 +111,9 @@ class _UpdateButtonState extends ConsumerState<UpdateButton> {
                                 backgroundColor: MaterialStateProperty.all(
                                   isErrored
                                       ? Theme.of(context).colorScheme.error
-                                      : null,
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
                                 ),
                               ),
                           onPressed: () {
@@ -121,6 +123,7 @@ class _UpdateButtonState extends ConsumerState<UpdateButton> {
 
                               dynamic selectedAmber =
                                   formGroup.control('amber_id').value;
+                              dynamic notes = formGroup.control('notes').value;
                               List<ItemsMovement> newItems = [];
                               for (var i = 0;
                                   i < selectedQuantity.length;
@@ -140,12 +143,12 @@ class _UpdateButtonState extends ConsumerState<UpdateButton> {
                                         .value as DateTime,
                                     'quantity':
                                         formGroup.control('quantity.$i').value,
-                                    'notes': formGroup.control('notes').value,
+                                    'notes': notes[i],
                                   }));
                                 }
                               }
 
-                              // We keep the future returned by addTodo in a variable
+                              // We keep the future returned by insertoutitems in a variable
                               final future = ref
                                   .read(
                                       insertOutItemsControllerProvider.notifier)

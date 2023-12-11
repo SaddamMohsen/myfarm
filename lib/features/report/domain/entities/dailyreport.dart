@@ -1,3 +1,5 @@
+import 'package:myfarm/features/common/domain/failure.dart';
+
 class DailyReport {
   final int amberId;
   final int death;
@@ -25,32 +27,33 @@ class DailyReport {
       required this.remainEgg});
 
   factory DailyReport.fromJson(Map<String, dynamic> json) {
-    json.forEach(
-      (key, value) => print('$key :$value : ${value.runtimeType}'),
-    );
+    // json.forEach(
+    //   (key, value) => print('$key :$value : ${value.runtimeType}'),
+    // );
 
     try {
       DailyReport data = DailyReport(
           amberId: json['amber_id'] ?? 0,
-          death: json['death'],
+          death: json['death'] ?? 0,
           /*prodDate: json['prodDate'].runtimeType == Timestamp
             ? prodDateFire(json)
             : DateTime.parse(json['prodDate']), //??*/
           // prodDate: DateTime.parse(json['prodDate']),
+          incomFeed: json['incom_feed'] ?? 0,
+          intakFeed: double.parse(json['intak_feed'].toString()),
           prodTray: json['prodTray'] ?? 0,
           prodCarton: json['prodCarton'] ?? 0,
           outTray: json['outTray'] ?? 0,
           // outTrayEggsNote: json['outTrayEggsNote'],
           outCarton: json['outCarton'] ?? 0,
-          outNote: json['outEggsNote'] ?? 'لايوجد',
-          incomFeed: json['incom_feed'] ?? 0.0,
-          intakFeed: json['intak_feed'],
           reminFeed: json['remain_feed'],
+          outNote: json['outEggsNote'] ?? '',
           remainEgg: json['reminegg']);
       return data;
     } catch (e) {
-      print(e.toString());
-      throw (e.toString());
+      ///TODO remove print
+      //print(' error in daily report to json ${e.toString()}');
+      throw Failure.unprocessableEntity(message: e.toString());
     }
     //print(data.toString());
   }

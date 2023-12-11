@@ -22,8 +22,9 @@ class MyOutDialog extends ConsumerStatefulWidget {
 class _MyOutDialogState extends ConsumerState<MyOutDialog> {
   //late FormGroup myForm;
   final outForm = FormGroup({
-    'notes': FormControl<String>(
-        validators: [Validators.required, Validators.minLength(7)]),
+    'notes': FormArray<String>([]),
+    // (
+    //     validators: [Validators.required, Validators.minLength(5)]),
     'item_code': FormControl<String>(validators: [Validators.required]),
     'type_movement':
         FormControl<String>(value: 'خارج', validators: [Validators.required]),
@@ -34,14 +35,18 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
 
   bool isItemsLoaded = false; //is itemeName loaded
   String itemCode = ''; //itemCode selected from ItemsDropDown Menu
-  List<ItemsMovement> newItems =
-      <ItemsMovement>[]; //new Items that will be sended into database
+  // List<ItemsMovement> newItems =
+  //     <ItemsMovement>[]; //new quantities that will be sended into database
 
-  bool isPressed = false; //
 //array that keep the out quantity foreach amber
   FormArray<String> get selectedQuantities =>
       outForm.control('quantity') as FormArray<String>;
+  //array that keep a list of ambers id
   FormArray<num> get ambersId => outForm.control('amber_id') as FormArray<num>;
+
+  //array to keepnotes for each quantity
+  FormArray<String> get outNotes =>
+      outForm.control('notes') as FormArray<String>;
   //static
   @override
   void initState() {
@@ -74,7 +79,7 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
           color: Theme.of(context).colorScheme.onBackground,
           size: 40.0,
         ),
-        backgroundColor: const Color(0xffF3F6FC),
+        backgroundColor: Theme.of(context).dialogBackgroundColor,
         elevation: 15.0,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(32.0))),
@@ -83,14 +88,16 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
         content: Container(
           height: MediaQuery.of(context).size.height * 0.4,
           width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+          //padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: Theme.of(context).cardColor,
+            color: Theme.of(context).dialogBackgroundColor,
+            //color: Theme.of(context).cardColor,
           ),
           child: SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
             child: Card(
+              color: Theme.of(context).dialogBackgroundColor,
               child: Column(
                   //mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -105,27 +112,28 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                           mainAxisSize: MainAxisSize.min,
                           textDirection: TextDirection.rtl,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Text('نوع الخارج'),
+                            Container(
+                              padding: const EdgeInsets.all(12.0),
+                              child: const Text('نوع الخارج'),
                             ),
                             items.when(
                                 data: (data) {
                                   return Expanded(
+                                    // width: double.infinity,
+                                    //height: 51,
                                     child: ReactiveDropdownField(
+                                      decoration: const InputDecoration(
+                                          contentPadding: EdgeInsets.all(5)),
                                       formControlName: 'item_code',
+                                      alignment: AlignmentDirectional.topEnd,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
-                                      // menuStyle: Theme.of(context)
-                                      //     .dropdownMenuTheme
-                                      //     .menuStyle,
-                                      // menuHeight: 150,
+
                                       menuMaxHeight: 150,
                                       // requestFocusOnTap: true,
                                       onChanged: (control) => {
-                                        //check if the list of items has been loaded then reset the contoroller values
-
+                                        /// when item_code dropdown value changed then
                                         setState(() {
                                           ///reset the last values of selectedQuantities
                                           selectedQuantities.value!.clear();
@@ -141,6 +149,12 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                                                     .toList(),
                                                 updateParent: true,
                                               );
+                                              outNotes.updateValue(
+                                                ambersId.value!
+                                                    .map<String>((e) => ' ')
+                                                    .toList(),
+                                                //updateParent: true,
+                                              );
                                             }
                                           }
 
@@ -150,17 +164,19 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                                           outForm
                                               .control('item_code')
                                               .reset(value: control.value);
-                                          outForm.control('notes').reset();
+                                          // outForm
+                                          //     .control('notes')
+                                          //     .reset(value: ' ');
 
                                           // itemCode = control.value;
                                         }),
                                       },
                                       // dropdownMenuEntries:
                                       items: data.map<DropdownMenuItem<String>>(
-                                          (ambData) {
+                                          (item) {
                                         return DropdownMenuItem<String>(
-                                          value: ambData.itemCode,
-                                          child: Text(ambData.itemName),
+                                          value: item.itemCode,
+                                          child: Text(item.itemName),
                                         );
                                       }).toList(),
                                     ),
@@ -175,6 +191,7 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                       ),
                     ),
                     Center(
+                      ///if the item list is loaded then create a list of ambers
                       child: isItemsLoaded
                           ? amberMap.when(
                               data: (amber) {
@@ -184,6 +201,10 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                                         selectedQuantities.addAll(amber
                                             .map((id) =>
                                                 FormControl<String>(value: '0'))
+                                            .toList());
+                                        outNotes.addAll(amber
+                                            .map((id) =>
+                                                FormControl<String>(value: ' '))
                                             .toList());
                                         if (ambersId.value!.isEmpty) {
                                           ambersId.addAll(amber
@@ -204,66 +225,155 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
 
                                       return Center(
                                         child: ListTile(
-                                            // selected: true,
-                                            selectedColor:
-                                                Theme.of(context).primaryColor,
-                                            title: Text(
-                                              'عنبر: \t ${item.id.toString()}',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.copyWith(
-                                                    fontSize: 14,
-                                                    color: const Color.fromARGB(
-                                                        255, 16, 8, 22),
-                                                  ),
-                                              textDirection: TextDirection.rtl,
+                                          // selected: true,
+                                          // selectedColor:
+                                          //     Theme.of(context).primaryColor,
+                                          title: Text(
+                                            'عنبر: \t ${item.id.toString()}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(
+                                                  fontSize: 14,
+                                                  color: const Color.fromARGB(
+                                                      255, 16, 8, 22),
+                                                ),
+                                            textDirection: TextDirection.rtl,
+                                          ),
+                                          leading: Container(
+                                            margin:
+                                                const EdgeInsets.only(top: 15),
+                                            // padding: const EdgeInsets.symmetric(
+                                            //     vertical: 2),
+                                            alignment:
+                                                AlignmentDirectional.center,
+                                            width: 70.0,
+                                            height: 65.0,
+                                            child: ReactiveForm(
+                                              formGroup: outForm,
+                                              child: ReactiveFormArray<String>(
+                                                  formArray: selectedQuantities,
+                                                  builder:
+                                                      (context, array, child) {
+                                                    if (selectedQuantities
+                                                        .controls.isNotEmpty) {
+                                                      return ReactiveTextField(
+                                                        key: ObjectKey(
+                                                            selectedQuantities),
+                                                        formControl:
+                                                            selectedQuantities
+                                                                        .controls[
+                                                                    index]
+                                                                as FormControl<
+                                                                    String>,
+                                                        keyboardType:
+                                                            const TextInputType
+                                                                .numberWithOptions(),
+                                                        decoration:
+                                                            InputDecoration(
+                                                          hintText: 'الكمية',
+                                                          hintStyle: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodySmall!
+                                                              .copyWith(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .outlineVariant),
+                                                        ),
+                                                        // .numberWithOptions(
+                                                        // decimal:
+                                                        //     true),
+                                                        textInputAction:
+                                                            TextInputAction
+                                                                .next,
+                                                        validationMessages: {
+                                                          'required': (error) =>
+                                                              "مطلوب"
+                                                        },
+                                                      );
+                                                    } else {
+                                                      return const SizedBox();
+                                                    }
+                                                  }),
                                             ),
-                                            leading: Container(
-                                                alignment:
-                                                    AlignmentDirectional.center,
-                                                width: 60.0,
-                                                height: 80.0,
-                                                child: ReactiveForm(
-                                                  formGroup: outForm,
-                                                  child: ReactiveFormArray<
-                                                          String>(
-                                                      formArray:
-                                                          selectedQuantities,
-                                                      builder: (context, array,
-                                                          child) {
-                                                        if (selectedQuantities
-                                                            .controls
-                                                            .isNotEmpty) {
-                                                          return ReactiveTextField(
-                                                            key: ObjectKey(
-                                                                selectedQuantities),
-                                                            formControl:
-                                                                selectedQuantities
-                                                                            .controls[
-                                                                        index]
-                                                                    as FormControl<
-                                                                        String>,
-                                                            keyboardType:
-                                                                const TextInputType
-                                                                    .numberWithOptions(),
-                                                            // .numberWithOptions(
-                                                            // decimal:
-                                                            //     true),
-                                                            textInputAction:
-                                                                TextInputAction
-                                                                    .next,
-                                                            validationMessages: {
-                                                              'required':
-                                                                  (error) =>
-                                                                      "مطلوب"
-                                                            },
-                                                          );
-                                                        } else {
-                                                          return const SizedBox();
-                                                        }
-                                                      }),
-                                                ))),
+                                          ),
+                                          subtitle: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 2),
+                                              alignment:
+                                                  AlignmentDirectional.center,
+                                              width: 60.0,
+                                              height: 60.0,
+                                              child: ReactiveForm(
+                                                formGroup: outForm,
+                                                child: ReactiveFormArray<
+                                                        String>(
+                                                    formArray: outNotes,
+                                                    builder: (context, array,
+                                                        child) {
+                                                      // if (outNotes.controls
+                                                      //     .isNotEmpty) {
+                                                      return ReactiveTextField(
+                                                        key:
+                                                            ObjectKey(outNotes),
+                                                        formControl: outNotes
+                                                                .controls[index]
+                                                            as FormControl<
+                                                                String>,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodySmall,
+                                                        textDirection:
+                                                            TextDirection.rtl,
+                                                        decoration:
+                                                            InputDecoration(
+                                                                hintTextDirection:
+                                                                    TextDirection
+                                                                        .rtl,
+                                                                label: Text(
+                                                                  'تفاصيل الخارج',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodySmall!
+                                                                      .copyWith(
+                                                                          color: Theme.of(context)
+                                                                              .colorScheme
+                                                                              .outline
+                                                                              .withBlue(100)),
+                                                                ),
+                                                                hintStyle: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodySmall!
+                                                                    .copyWith(
+                                                                        color: Theme.of(context)
+                                                                            .colorScheme
+                                                                            .outlineVariant),
+                                                                hintText:
+                                                                    'تفاصيل الخارج'),
+                                                        // .numberWithOptions(
+                                                        // decimal:
+                                                        //     true),
+                                                        textInputAction:
+                                                            TextInputAction
+                                                                .next,
+                                                        validationMessages: {
+                                                          'required': (error) =>
+                                                              "مطلوب"
+                                                        },
+                                                      );
+                                                      // } else {
+                                                      //   return const Text(
+                                                      //       'hhhhh');
+                                                      // }
+                                                    }),
+                                              )),
+                                        ),
                                       );
                                     });
                               },
@@ -277,37 +387,49 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                               child: Text('قم بتحديد نوع الخارج'),
                             ),
                     ),
-                    ReactiveForm(
+                    /*ReactiveForm(
                       formGroup: outForm,
                       child: ReactiveValueListenableBuilder(
                           formControlName: 'amber_id',
                           builder: (context, control, child) {
+                            ///check if the quantities list values is valid then show outnote textfield
                             if (selectedQuantities.controls.every((element) =>
                                     element.status == ControlStatus.valid) &&
                                 outForm.control('item_code').status ==
                                     ControlStatus.valid) {
-                              return ReactiveTextField(
-                                //controller: noteController,
-                                formControlName: 'notes',
-                                showErrors: (control) =>
-                                    control.invalid &&
-                                    control.touched &&
-                                    control.dirty,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                                textDirection: TextDirection.rtl,
-                                decoration: const InputDecoration(
-                                    fillColor: Colors.white54,
-                                    hintTextDirection: TextDirection.ltr,
-                                    labelText: 'ملاحظات الخارج'),
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                height: 50,
+                                child: Text('was notes'),
+                                // ReactiveTextField(
+                                //   //controller: noteController,
+                                //   formControlName: 'notes',
+                                //   showErrors: (control) =>
+                                //       control.invalid &&
+                                //       control.touched &&
+                                //       control.dirty,
+                                //   style: Theme.of(context).textTheme.bodyMedium,
+                                //   textDirection: TextDirection.rtl,
+                                //   decoration: InputDecoration(
+                                //       //fillColor: Colors.white54,
+                                //       hintTextDirection: TextDirection.ltr,
+                                //       labelText: 'ملاحظات الخارج',
+                                //       labelStyle: Theme.of(context)
+                                //           .textTheme
+                                //           .bodySmall),
+                                // ),
                               );
                             }
                             return const SizedBox();
                           }),
-                    ),
+                    ),*/
                     ReactiveForm(
                       formGroup: outForm,
                       child: ReactiveFormConsumer(
                         builder: (context, formGroup, child) {
+                          ///check if the form values is valid and out notes contain text
+                          ///then show update button else show sizeBox
                           if (outForm.valid && outForm.control('notes').dirty) {
                             return const UpdateButton();
                           } else {
@@ -336,32 +458,6 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class MyErrorDialog extends StatelessWidget {
-  const MyErrorDialog({super.key, required this.icon, required this.content});
-  final IconData icon;
-  final String content;
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      icon: Icon(
-        icon,
-        color: Theme.of(context).colorScheme.error,
-      ),
-      title: const Text('حالة البيانات'),
-      content: Text(content.toString()),
-      actions: <Widget>[
-        Center(
-          child: TextButton(
-              child: const Text('موافق'),
-              onPressed: () => {
-                    Navigator.of(context).pop(),
-                  }),
-        ),
-      ],
     );
   }
 }

@@ -1,16 +1,14 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfarm/bootstrap.dart';
 
 //  import 'package:firebase_core/firebase_core.dart';
 //  import 'firebase_options.dart';
-//import 'package:myfarm/features/production/presentation/add_production_page.dart';
-import 'package:myfarm/config/myfarm_theme.dart';
-import 'package:myfarm/config/routes.dart';
-//import 'package:myfarm/config/provider_logger.dart';
-//import 'package:supabase_flutter/supabase_flutter.dart';
 
-//import 'package:intl/date_symbol_data_local.dart';
+import 'package:myfarm/config/myfarm_theme.dart';
+import 'package:myfarm/config/flexcolor_theme.dart';
+import 'package:myfarm/config/routes.dart';
 
 void main() async {
   /* WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +20,8 @@ void main() async {
   // initializeDateFormatting("ar_SA", null);
 
   runApp(UncontrolledProviderScope(
-      container: await bootstrap(), child: const MyfarmApp()));
+      container: await bootstrap(),
+      child: const ProviderScope(child: MyfarmApp())));
 }
 
 class MyfarmApp extends StatelessWidget {
@@ -35,8 +34,15 @@ class MyfarmApp extends StatelessWidget {
       title: 'مزرعتي',
       locale: const Locale('ar_SA'),
       themeMode: ThemeMode.system,
-      theme: MyFarmTheme.lightTheme,
-      darkTheme: MyFarmTheme.darktTheme,
+      theme: FlexColorFarmTheme.lightTheme,
+      darkTheme: FlexColorFarmTheme.darkTheme,
+
+// If you do not have a themeMode switch, uncomment this line
+// to let the device system mode control the theme mode:
+//themeMode: ThemeMode.system,
+
+      //theme: MyFarmTheme.lightTheme,
+      //darkTheme: MyFarmTheme.darktTheme,
 
       // home: const MyHomePage(
       //   title: 'مزرعتي',

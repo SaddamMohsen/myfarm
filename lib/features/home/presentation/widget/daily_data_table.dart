@@ -9,7 +9,7 @@ class MyDataTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
+      child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.5,
         child: Card(
           elevation: 5,
@@ -18,15 +18,14 @@ class MyDataTable extends StatelessWidget {
             children: [
               PaginatedDataTable(
                 header: Text(
-                  " التقرير اليومي بتاريخ " +
-                      data[0].prodDate.toString().substring(0, 11),
+                  " التقرير اليومي بتاريخ ${data[0].prodDate.toString().substring(0, 11)}",
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
                 columnSpacing: 16,
                 horizontalMargin: 15,
                 dataRowMinHeight: 15.0,
-                rowsPerPage: data.length,
+                rowsPerPage: data.length + 1,
                 columns: [
                   DataColumn(
                       label: Expanded(
@@ -65,26 +64,7 @@ class MyDataTable extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodySmall),
                     ),
                   )),
-                  /*    Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text("الانتاج",
-                          style: Theme.of(context).textTheme.bodySmall),
-                      Row(
-                        textDirection: TextDirection.rtl,
-                        children: [
-                          Text("طبق",
-                              style: Theme.of(context).textTheme.bodySmall),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text("كرتون",
-                              style: Theme.of(context).textTheme.bodySmall),
-                        ],
-                      ),
-                    ],
-                  )),
-                 */
+
                   DataColumn(
                       label: Expanded(
                     child: Center(
@@ -173,87 +153,122 @@ class _DataSource extends DataTableSource {
   final BuildContext context;
   final List<DailyDataModel> data;
   List<_Row>? _row;
-  int _selectedCount = 0;
+  final int _selectedCount = 0;
   @override
-  int get rowCount => _row!.length;
+  int get rowCount => data.length == 1 ? _row!.length : _row!.length + 1;
   @override
   bool get isRowCountApproximate => false;
   @override
   int get selectedRowCount => _selectedCount;
+
   @override
   DataRow getRow(int index) {
     assert(index >= 0);
-    if (index >= _row!.length) return DataRow(cells: []);
-    final row = _row![index];
-    return DataRow.byIndex(
-      index: index,
-      selected: row.selected,
-      color: MaterialStateColor.resolveWith((Set<MaterialState> states) {
-        if (states.contains(MaterialState.selected)) {
-          return Theme.of(context).colorScheme.primary;
-        }
-
-        return Theme.of(context).colorScheme.onPrimary;
-        ;
-      }),
-      cells: [
-        DataCell(
-            Center(
-              child: IconButton(
-                //style: Theme.of(context).elevatedButtonTheme.style,
-                icon: Icon(Icons.edit_attributes),
-
-                // behavior: HitTestBehavior.deferToChild,
-                onPressed: () {
-                  print('tabbed');
-                },
-                // child: SizedBox()
-                // IconButton(
-                //     icon: Icon(Icons.edit_attributes),
-                //     onPressed: () {
-                //       print(row.row_id.toString());
-                //     }),
-              ),
-            ),
-            //showEditIcon: true,
-            onDoubleTap: () {
-          showDialog(
-            context: context,
-            builder: ((context) => MyEditDialog(
-                title: 'حدد البيانات التي تريد تعديلها', content: data[index])),
-          );
-        }),
+    // if index greater than length so return the total row else return rows
+    if (index >= data.length) {
+      return DataRow(cells: [
+        const DataCell(
+          Center(
+            child: Icon(Icons.wysiwyg),
+          ),
+        ),
         DataCell(Center(
           child: Text(
-            row.note.toString(),
+            data.fold('', (p, e) => '${e.outEggsNote!} $p').toString(),
             style: Theme.of(context).textTheme.bodySmall,
             textAlign: TextAlign.start,
+            overflow: TextOverflow.fade,
           ),
         )),
-        DataCell(Center(child: Text(row.outCarton.toString()))),
-        DataCell(Center(child: Text(row.outTray.toString()))),
-        DataCell(Center(child: Text(row.prodCarton.toString()))),
-        DataCell(Center(child: Text(row.prodTray.toString()))),
-        DataCell(Center(child: Text(row.intakFeed.toString()))),
-        DataCell(Center(child: Text(row.incomFeed.toString()))),
-        DataCell(Center(child: Text(row.death.toString()))),
-        DataCell(
+        DataCell(Center(
+            child:
+                Text(data.fold(0, (p, e) => e.outEggsCarton! + p).toString()))),
+        DataCell(Center(
+            child:
+                Text(data.fold(0, (p, e) => e.outEggsTray! + p).toString()))),
+        DataCell(Center(
+            child: Text(data.fold(0, (p, e) => e.prodCarton! + p).toString()))),
+        DataCell(Center(
+            child: Text(data.fold(0, (p, e) => e.prodTray! + p).toString()))),
+        DataCell(Center(
+            child: Text(data.fold(0.0, (p, e) => e.intakFeed + p).toString()))),
+        DataCell(Center(
+            child: Text(data.fold(0, (p, e) => e.incomFeed! + p).toString()))),
+        DataCell(Center(
+            child: Text(data.fold(0, (p, e) => e.death! + p).toString()))),
+        const DataCell(
           Center(
             child: Text(
-              row.amberId.toString(),
+              'الاجمالي',
               textAlign: TextAlign.start,
             ),
           ),
         ),
-      ],
-      // onSelectChanged: (value) {
-      //   if (row.selected != value) {
-      //     _selectedCount += value! ? 1 : -1;
-      //     assert(_selectedCount >= 0);
-      //     row.selected = value;
-      //     notifyListeners();
-      //   }
-      // },
-    );
+      ]);
+    }
+    final row = _row![index];
+    return DataRow.byIndex(
+        index: index,
+        selected: row.selected,
+        color: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return Theme.of(context).colorScheme.primary;
+          }
+
+          return Theme.of(context).colorScheme.onPrimary;
+        }),
+        cells: [
+          DataCell(
+              Center(
+                child: IconButton(
+                  //style: Theme.of(context).elevatedButtonTheme.style,
+                  icon: const Icon(Icons.edit_attributes),
+                  // behavior: HitTestBehavior.deferToChild,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: ((context) => MyEditDialog(
+                          title: 'حدد البيانات التي تريد تعديلها',
+                          content: data[index])),
+                    );
+                    // print('tabbed');
+                  },
+                ),
+              ),
+              //showEditIcon: true,
+              onTap: () {}),
+          DataCell(Center(
+            child: Text(
+              row.note.toString(),
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.start,
+            ),
+          )),
+          DataCell(Center(child: Text(row.outCarton.toString()))),
+          DataCell(Center(child: Text(row.outTray.toString()))),
+          DataCell(Center(child: Text(row.prodCarton.toString()))),
+          DataCell(Center(child: Text(row.prodTray.toString()))),
+          DataCell(Center(child: Text(row.intakFeed.toString()))),
+          DataCell(Center(child: Text(row.incomFeed.toString()))),
+          DataCell(Center(child: Text(row.death.toString()))),
+          DataCell(
+            Center(
+              child: Text(
+                row.amberId.toString(),
+                textAlign: TextAlign.start,
+              ),
+            ),
+          ),
+        ]
+
+        // onSelectChanged: (value) {
+        //   if (row.selected != value) {
+        //     _selectedCount += value! ? 1 : -1;
+        //     assert(_selectedCount >= 0);
+        //     row.selected = value;
+        //     notifyListeners();
+        //   }
+        // },
+        );
   }
 }

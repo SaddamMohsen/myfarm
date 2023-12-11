@@ -6,7 +6,7 @@ part of 'supabase_auth_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$supaAuthRepHash() => r'b92be218aa1ee1f76299ed4550914b2f43db755c';
+String _$supaAuthRepHash() => r'5760cb36233f34b3e78783f96b63bffb372cdfac';
 
 /// See also [supaAuthRep].
 @ProviderFor(supaAuthRep)
@@ -36,7 +36,7 @@ final authStateChangesProvider = AutoDisposeStreamProvider<User?>.internal(
 );
 
 typedef AuthStateChangesRef = AutoDisposeStreamProviderRef<User?>;
-String _$authControllerHash() => r'69b56c2f2be5ecb4cf43597a264d21f247cccfa1';
+String _$authControllerHash() => r'82369b897f53d1b285e1dd5ddfd6f1368a5a193e';
 
 /// See also [AuthController].
 @ProviderFor(AuthController)

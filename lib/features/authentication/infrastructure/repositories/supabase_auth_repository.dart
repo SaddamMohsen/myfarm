@@ -9,6 +9,7 @@ class SupabaseAuthRepository extends AuthRepository {
   SupabaseAuthRepository({required this.authClient}) : super(authClient);
 
   /// Exposes Supabase auth client to allow Auth Controller to subscribe to auth changes
+  @override
   final GoTrueClient authClient;
   @override
   User? get currentUser => authClient.currentUser;

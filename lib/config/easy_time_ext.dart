@@ -1,4 +1,3 @@
-import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 extension FullMonthDayDate on EasyDateFormatterCust {

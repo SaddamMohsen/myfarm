@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class InputNumber extends StatefulWidget {
-  InputNumber({super.key, required this.labelText, required this.controller});
+  const InputNumber({super.key, required this.labelText, required this.controller});
   final String labelText;
   final TextEditingController controller;
 

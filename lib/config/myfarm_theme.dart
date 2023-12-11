@@ -69,7 +69,7 @@ class MyFarmTheme {
         cardColor: const Color(0xffFAFAFA),
         dialogBackgroundColor: const Color(0xffF3F6FC),
         disabledColor: const Color.fromARGB(255, 204, 216, 240),
-        dividerColor: Color.fromARGB(255, 157, 183, 236),
+        dividerColor: const Color.fromARGB(255, 157, 183, 236),
         scaffoldBackgroundColor: const Color(0xffFAFAFA),
         //const Color(0xffF6F4EF),
         //Color(0xffF3F6FC), // Color(0xffFAFAFA),
@@ -143,7 +143,7 @@ class MyFarmTheme {
             menuStyle: MenuStyle(
           alignment: AlignmentDirectional.bottomStart,
           backgroundColor: const MaterialStatePropertyAll<Color>(
-            const Color(0xffF3F6FC),
+            Color(0xffF3F6FC),
           ),
           side:
               MaterialStateBorderSide.resolveWith((Set<MaterialState> states) {
@@ -163,7 +163,7 @@ class MyFarmTheme {
           headingRowColor: MaterialStateProperty.resolveWith<Color?>(
               (Set<MaterialState> states) {
             if (states.contains(MaterialState.hovered)) {
-              return Color(0xffE6E0E9);
+              return const Color(0xffE6E0E9);
             }
             return null;
           }),
@@ -248,7 +248,7 @@ class MyFarmTheme {
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
           primary: Color(0xffb62400),
-          onPrimary: Color(0xff02131),
+          onPrimary: Color(0x0ff02131),
           onError: Color(0xffFAFAFA),
           primaryContainer: Color(0xffffdad2),
           onPrimaryContainer: Color(0xff3d0600),
@@ -279,9 +279,9 @@ class MyFarmTheme {
         // backgroundColor: Color.fromARGB(187, 45, 39, 201),
         primaryColor: const Color(0xffc0b5f5),
         //colorSchemeSeed: Color(0xffFAFAFA),
-        cardColor: Color.fromARGB(255, 83, 72, 72),
-        dialogBackgroundColor: Color.fromARGB(255, 31, 35, 44),
-        scaffoldBackgroundColor: Color.fromARGB(255, 26, 20, 20),
+        cardColor: const Color.fromARGB(255, 83, 72, 72),
+        dialogBackgroundColor: const Color.fromARGB(255, 31, 35, 44),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 26, 20, 20),
         //const Color(0xffF6F4EF),
         //Color(0xffF3F6FC), // Color(0xffFAFAFA),
         fontFamily: 'Tajawal',
@@ -392,7 +392,7 @@ class MyFarmTheme {
           foregroundColor:
               MaterialStateColor.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.disabled))
-              return Color.fromARGB(255, 62, 49, 77);
+              return const Color.fromARGB(255, 62, 49, 77);
 
             return const Color.fromARGB(255, 83, 82, 83);
           }),

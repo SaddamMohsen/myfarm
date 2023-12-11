@@ -31,13 +31,13 @@ class RouteGenerator {
             builder: (BuildContext context) =>
                 AddProduction(prodDate: DateTime.now()));
       case loginPage:
-        return MaterialPageRoute(builder: (_) => LoginPage());
+        return MaterialPageRoute(builder: (_) => const LoginPage());
       case reportPage:
         return MaterialPageRoute(
             builder: (BuildContext context) =>
                 ReportScreen(repDate: DateTime.now()));
       default:
-        throw FormatException("Route not found");
+        throw const FormatException("Route not found");
     }
   }
 }

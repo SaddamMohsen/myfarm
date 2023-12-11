@@ -230,7 +230,7 @@ List<Step> getSteps(
                   error: (err, stack) => Text('خطأ: $err'),
                   data: (data) => ReactiveDropdownField(
                     formControlName: inputFormControl.amber_id.name,
-                    dropdownColor: const Color.fromARGB(255, 235, 237, 240),
+                    //dropdownColor: const Color.fromARGB(255, 235, 237, 240),
                     borderRadius: BorderRadius.circular(15),
                     elevation: 10,
                     decoration:
@@ -240,7 +240,7 @@ List<Step> getSteps(
                       _resetForm(form, control.value),
                     },
                     //get the list of ambers and convert it into dropdown men item list
-                    items: ambers.value!.map<DropdownMenuItem<int>>((ambData) {
+                    items: data.map<DropdownMenuItem<int>>((ambData) {
                       return DropdownMenuItem<int>(
                         value: ambData.id,
                         child: Text('${ambData.id} عنبر'),
@@ -257,14 +257,21 @@ List<Step> getSteps(
     Step(
         state: currentStep > 2 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 2,
-        title: const Text("  حركة العلف والدجاج"),
+        title: const Text(
+          "  حركة العلف والدجاج",
+          // style: TextStyle(color: Colors.blue),
+        ),
         content: _inputFeed(form, context),
-        label: Text('حركة العلف')),
+        label: const Text(
+          'حركة العلف',
+        )),
     //step 3 to insert production of eggs and out eggs and save
     Step(
       state: currentStep > 3 ? StepState.complete : StepState.indexed,
       isActive: currentStep >= 3,
-      title: const Text("حركة البيض"),
+      title: const Text(
+        "حركة البيض",
+      ),
       content: InputEggWidget(form: form),
     ),
   ];
@@ -318,12 +325,12 @@ _inputFeed(FormGroup form, BuildContext context) {
       //         )),
       Container(
         //margin: const EdgeInsets.only(bottom: 5.0),
-        //: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
-          color: Theme.of(context)
-              .colorScheme
-              .onBackground, // const Color(0xFFF1F4F8),
+          // color: Theme.of(context)
+          //     .colorScheme
+          //     .onBackground, // const Color(0xFFF1F4F8),
           shape: BoxShape.rectangle,
         ),
         child: Text(' حركة العلف ',
@@ -380,11 +387,11 @@ _inputFeed(FormGroup form, BuildContext context) {
               Container(
                 width: 80.0,
                 height: 60,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 0.5, color: Theme.of(context).primaryColor),
-                  borderRadius: BorderRadius.circular(5),
-                ),
+                // decoration: BoxDecoration(
+                //   border: Border.all(
+                //       width: 0.5, color: Theme.of(context).primaryColor),
+                //   borderRadius: BorderRadius.circular(5),
+                // ),
                 child: InputWidget(
                   form: form,
                   name: inputFormControl.intak_feed,

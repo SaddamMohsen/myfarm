@@ -120,7 +120,7 @@ class DailyDataModel {
     //   (key, value) => print('$key :$value : ${value.runtimeType}'),
     // );
     json['intak_feed'] = json['intak_feed'].toString();
-    //json.remove('id');
+
     json.remove('farm_id');
     json.remove('created_at');
     try {

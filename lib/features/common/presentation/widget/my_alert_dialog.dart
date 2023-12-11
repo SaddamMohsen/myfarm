@@ -25,13 +25,13 @@ class MyAlertDialog extends StatelessWidget {
     final List<Map<String, dynamic>> myList = [];
     Map<String, dynamic> myMap = {};
 //convert list to map<string,dynamic> then add them to new list
-    list.forEach((element) {
+    for (var element in list) {
       //print(element);
       final m = element.toString().split(':');
       final mapof = <String, dynamic>{m[0]: m[1]};
       myMap = Map<String, dynamic>.of(mapof);
       myList.add(myMap);
-    });
+    }
     //print(myList[0].keys);
     return AlertDialog(
       icon: const Icon(
@@ -71,7 +71,7 @@ class MyAlertDialog extends StatelessWidget {
                       '${itemText[index]}:     \t ${item.values.toString()}',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Color.fromARGB(255, 16, 8, 22),
+                            color: const Color.fromARGB(255, 16, 8, 22),
                           ),
                       textDirection: TextDirection.rtl,
                     ),
@@ -85,7 +85,7 @@ class MyAlertDialog extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               width: 100.0,
               child: ElevatedButton(
                 style: Theme.of(context).elevatedButtonTheme.style,

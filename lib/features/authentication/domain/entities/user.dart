@@ -1,5 +1,4 @@
 //@freezd
-import 'dart:convert';
 
 class AppUser {
   final int uuid;

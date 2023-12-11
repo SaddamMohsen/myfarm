@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myfarm/features/common/presentation/widget/input_egg_widget.dart';
+import 'package:myfarm/features/common/presentation/widget/my_button.dart';
 import 'package:myfarm/features/production/domain/entities/dailydata.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:myfarm/utilities/form_model.dart';
@@ -62,10 +64,8 @@ class _MyEditDialogState extends State<MyEditDialog> {
 
   @override
   Widget build(BuildContext context) {
-    //convert string to list
-
     return SingleChildScrollView(
-      child: AlertDialog(
+      child: AlertDialog.adaptive(
         icon: Icon(
           Icons.edit_note_outlined,
           color: Theme.of(context).colorScheme.primary,
@@ -76,26 +76,25 @@ class _MyEditDialogState extends State<MyEditDialog> {
             .outlineVariant, // const Color(0xffF3F6FC),
         elevation: 15.0,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(32.0))),
-        // shape: Border.all(
-        //     width: 0.5, color: Theme.of(context).colorScheme.onBackground),
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+
         title: Text(widget.title,
             style: Theme.of(context).textTheme.headlineSmall),
         content: Container(
           height: MediaQuery.of(context).size.height * 0.44,
           width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          //margin: const EdgeInsets.symmetric(horizontal: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 5.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Theme.of(context).cardColor,
+            color: Theme.of(context).highlightColor,
           ),
-          child: Card(
-            //elevation: 2,
-            child: Column(children: [
-              _inputFeed(myForm, context),
-              _iputProductionEggs(myForm, context, widget.content.trId),
-            ]),
-          ),
+          child: Column(children: [
+            _inputFeed(myForm, context),
+            Expanded(
+                child:
+                    InputEggWidget(form: myForm, trid: widget.content.trId!)),
+          ]),
         ),
         actions: [
           Row(
@@ -103,16 +102,9 @@ class _MyEditDialogState extends State<MyEditDialog> {
             children: [
               SizedBox(
                 width: 100.0,
-                child: ElevatedButton(
-                  style: Theme.of(context).elevatedButtonTheme.style,
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
-                    'إغلاق',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.black),
-                  ),
+                child: MyButton(
+                  onTap: () => Navigator.of(context).pop(),
+                  lable: 'إغلاق',
                 ),
               ),
             ],
@@ -134,9 +126,6 @@ _inputFeed(FormGroup form, BuildContext context) {
         //: const EdgeInsets.all(20.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
-          color: Theme.of(context)
-              .colorScheme
-              .onBackground, // const Color(0xFFF1F4F8),
           shape: BoxShape.rectangle,
         ),
         child: Text(' حركة العلف ',
@@ -148,26 +137,28 @@ _inputFeed(FormGroup form, BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             textDirection: TextDirection.rtl,
             children: <Widget>[
-              Container(
-                width: 80.0,
-                height: 60,
-                //color: kInputTextColor,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 0.5, color: Theme.of(context).primaryColor),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: InputWidget(
-                  form: form,
-                  name: inputFormControl.death,
-                  labelText: "الوفيات",
-                  keyboardType: const TextInputType.numberWithOptions(
-                      signed: false, decimal: false),
-                  next: inputFormControl.incom_feed,
-                  validationMessages: {
-                    'number': (error) => 'قيمة رقمية',
-                    'required': (error) => 'مطلوب'
-                  },
+              Expanded(
+                child: Container(
+                  width: 80.0,
+                  height: 60,
+                  //color: kInputTextColor,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 0.5, color: Theme.of(context).primaryColor),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: InputWidget(
+                    form: form,
+                    name: inputFormControl.death,
+                    labelText: "الوفيات",
+                    keyboardType: const TextInputType.numberWithOptions(
+                        signed: false, decimal: false),
+                    next: inputFormControl.incom_feed,
+                    validationMessages: {
+                      'number': (error) => 'قيمة رقمية',
+                      'required': (error) => 'مطلوب'
+                    },
+                  ),
                 ),
               ),
               Container(
@@ -217,7 +208,7 @@ _inputFeed(FormGroup form, BuildContext context) {
   );
 }
 
-_iputProductionEggs(FormGroup form, BuildContext context, int? rowId) {
+/*_iputProductionEggs(FormGroup form, BuildContext context, int? rowId) {
   // AmberController _controller = Get.put(AmberController());
   return SingleChildScrollView(
     child: ReactiveForm(
@@ -230,9 +221,9 @@ _iputProductionEggs(FormGroup form, BuildContext context, int? rowId) {
             padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.0),
-              color: Theme.of(context)
-                  .colorScheme
-                  .onBackground, // const Color(0xFFF1F4F8),
+              // color: Theme.of(context)
+              //     .colorScheme
+              //     .onBackground, // const Color(0xFFF1F4F8),
               shape: BoxShape.rectangle,
             ),
             child: Text(' حركة البيض ',
@@ -353,7 +344,7 @@ _iputProductionEggs(FormGroup form, BuildContext context, int? rowId) {
           ),
           Container(
             margin: const EdgeInsets.all(5.0),
-            width: 120.0,
+            width: 130.0,
             height: 40,
             //color: kInputTextColor,
             child: form.dirty
@@ -373,4 +364,4 @@ _iputProductionEggs(FormGroup form, BuildContext context, int? rowId) {
       ),
     ),
   );
-}
+}*/

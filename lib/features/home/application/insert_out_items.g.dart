@@ -9,7 +9,9 @@ part of 'insert_out_items.dart';
 String _$insertOutItemsControllerHash() =>
     r'b830f20273c5c558052b96eddb4db19b399cee6f';
 
-/// See also [InsertOutItemsController].
+///insert out Items provider
+///
+/// Copied from [InsertOutItemsController].
 @ProviderFor(InsertOutItemsController)
 final insertOutItemsControllerProvider =
     AutoDisposeAsyncNotifierProvider<InsertOutItemsController, void>.internal(

@@ -6,9 +6,10 @@ import 'package:intl/intl.dart';
 import 'package:myfarm/features/authentication/application/supabase_auth_provider.dart';
 import 'package:myfarm/features/home/application/fetch_production_data.dart';
 import 'package:myfarm/features/home/presentation/widget/daily_data_table.dart';
+import 'package:myfarm/features/production/application/add_production_notifier.dart';
+import 'package:myfarm/features/production/domain/entities/dailydata.dart';
 
 import 'package:myfarm/features/production/presentation/screen/add_production_page.dart';
-import 'package:myfarm/features/production/presentation/widgets/dailydata_view.dart';
 import 'package:myfarm/features/report/presentation/report_screen.dart';
 import 'package:myfarm/utilities/constants.dart';
 
@@ -101,10 +102,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     //return true;
   }
 
+  @override
+  void didUpdateWidget(covariant MyHomePage oldWidget) {
+    // TODO: implement didUpdateWidget
+    print('updated');
+    super.didUpdateWidget(oldWidget);
+  }
+
   final _key = GlobalKey<ExpandableFabState>();
   @override
   Widget build(BuildContext context) {
-    ref.watch(fetchProductionDataProvider(todayDate: _selectedDate));
+    //ref.watch(FetchProductionDataProvider(todayDate: _selectedDate));
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -181,10 +189,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           dayStrStyle: Theme.of(context).textTheme.bodySmall,
                         ),
                         activeDayStyle: DayStyle(
-                          monthStrStyle:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Color.fromARGB(255, 17, 17, 17),
-                                  ),
+                          monthStrStyle: Theme.of(context).textTheme.bodyMedium,
+                          // ?.copyWith(
+                          //   color: const Color.fromARGB(255, 17, 17, 17),
+                          // ),
                           dayNumStyle:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     fontSize: 16,
@@ -206,8 +214,34 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       width: MediaQuery.of(context).size.height * 0.9,
                       padding: const EdgeInsets.only(top: 10),
                       child: Consumer(builder: (_, WidgetRef ref, context) {
-                        final dailydata = ref.watch(FetchProductionDataProvider(
+                        // var newList = [];
+                        final dailydata = ref.watch(fetchProductionDataProvider(
                             todayDate: _selectedDate));
+                        // final  dailydata = ref
+                        //     .read(addProductionControllerProvider.notifier)
+                        //     .fetchProductionData(_selectedDate);
+                        // dailydata.then(
+                        //   (value) {
+                        //     if (value.isNotEmpty) {
+                        //       newList = value;
+                        //       return MyDataTable(data: value);
+                        //     } else
+                        //       return const SizedBox(
+                        //           child: Center(
+                        //               child: Text('لاتوجد بيانات لعرضها')));
+                        //   },
+                        //   onError: (err, stack) => Text('Error: $err'),
+                        // );
+                        // if (newList.isNotEmpty) {
+                        //   return MyDataTable(
+                        //       data: newList as List<DailyDataModel>);
+                        // } else
+                        //   return const Center(
+                        //       child: SizedBox(
+                        //     width: 100.0,
+                        //     height: 100.0,
+                        //     child: CircularProgressIndicator(),
+                        //   ));
                         return dailydata.when(
                           loading: () => const Center(
                             child: SizedBox(
@@ -333,7 +367,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                       // .hideCurrentMaterialBanner();
                                     },
                                     icon: const Icon(Icons.abc_outlined),
-                                    label: Text('اخفاء')),
+                                    label: const Text('اخفاء')),
                               ],
                             )
                           ]));

@@ -10,11 +10,6 @@ class MyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      // style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-      //         backgroundColor: MaterialStatePropertyAll(
-      //       Theme.of(context).colorScheme.primaryContainer,
-      //     ) //.withRed(200)),
-      // ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
@@ -22,24 +17,21 @@ class MyButton extends StatelessWidget {
           height: 40,
           width: 100,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              color: Theme.of(context).colorScheme.onSecondary
-              //.withRed(200), //.withRed(200),
-              ),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           child: ElevatedButton(
             onPressed: onTap,
-            style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-                    backgroundColor: MaterialStatePropertyAll(
-                  Theme.of(context).colorScheme.onSecondary, //.withRed(100),
-                )),
-            child: Text(lable,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.black)
-                // .headlineMedium
-                // ?.merge(TextStyle(color: Colors.white))),
-                ),
+            //style: Theme.of(context).elevatedButtonTheme.style,
+            // ?.copyWith(
+            //         backgroundColor: MaterialStatePropertyAll(
+            //       Theme.of(context).colorScheme.onSecondary, //.withRed(100),
+            //     )),
+            child: Text(
+              lable,
+              style: Theme.of(context).textTheme.bodyMedium,
+              // .headlineMedium
+              // ?.merge(TextStyle(color: Colors.white))),
+            ),
           ),
         ),
       ),

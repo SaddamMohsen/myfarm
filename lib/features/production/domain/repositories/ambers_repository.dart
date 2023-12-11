@@ -44,7 +44,8 @@ abstract class FarmRepository {
   Future<List<Item>> getItemsName();
 
   ///Add the daily data of speciefied Amber into the production table in database
-  Future<String> addDailyData({required DailyDataModel todayData});
+  Future<Either<Failure, DailyDataModel>> addDailyData(
+      {required DailyDataModel todayData});
 
 //add out items into item_movement table in database
   Future<void> insertOutItems({required List<ItemsMovement> itemsData});
@@ -55,7 +56,7 @@ abstract class FarmRepository {
   ///update the production for speciefic date
   ///todayData is the json data to be updated
   ///rowId is the id of row in production table in database
-  Future<void> updateDailyData(
+  Future<Either<Failure, DailyDataModel>> updateDailyData(
       {required DailyDataModel todayData, required int rowId});
 }
 
@@ -84,9 +85,10 @@ class FackAmbersRepository implements FarmRepository {
   }
 
   @override
-  Future<String> addDailyData({required DailyDataModel todayData}) async {
+  Future<Either<Failure, DailyDataModel>> addDailyData(
+      {required DailyDataModel todayData}) async {
     debugPrint('inside AddDailyData');
-    return "Success";
+    throw UnimplementedError();
     // print(todayData);
     //print(ambId);
     // ignore: unnecessary_null_comparison
@@ -98,7 +100,7 @@ class FackAmbersRepository implements FarmRepository {
   }
 
   @override
-  Future<void> updateDailyData(
+  Future<Either<Failure, DailyDataModel>> updateDailyData(
       {required DailyDataModel todayData, required int rowId}) {
     throw UnimplementedError();
   }

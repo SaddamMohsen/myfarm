@@ -1,4 +1,6 @@
 import 'package:myfarm/config/provider.dart';
+import 'package:myfarm/features/common/application/network_provider.dart';
+import 'package:myfarm/states/sign_in_state.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show User;
@@ -12,6 +14,12 @@ part 'supabase_auth_provider.g.dart';
 
 @riverpod
 SupabaseAuthRepository supaAuthRep(SupaAuthRepRef ref) {
+  final internetConnection = ref.watch(networkAwareProvider);
+  print('check net in auth repo ${internetConnection}');
+  if (internetConnection != NetworkStatus.On) {
+    throw AssertionError('لا يوجد اتصال انترنت');
+  }
+  print('after throw error');
   final authClient = ref.watch(supabaseClientProvider).auth;
   return SupabaseAuthRepository(authClient: authClient);
 }
@@ -23,14 +31,13 @@ Stream<User?> authStateChanges(AuthStateChangesRef ref) async* {
     yield authState.session?.user;
   }
 }
-// final authRepositoryProvider =
-//     riv.Provider((ref) => {SupabaseAuthRepository().signInEmailPassword(email, password)});
 
-//@Riverpod(keepAlive: true)
 @riverpod
 class AuthController extends _$AuthController {
   @override
-  FutureOr<void> build() {}
+  FutureOr<void> build() {
+    // return const SignInState.canSubmit();
+  }
   // FutureOr<User?> build() async {
   //   final repository = ref.watch(supaAuthRepProvider).currentUser;
   //   //final res = await repository.restoreSession();
@@ -81,16 +88,19 @@ class AuthController extends _$AuthController {
     final repository = ref.read(supaAuthRepProvider);
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => Future.value(repository.currentUser));
-    return null;
+    return repository.currentUser;
     // if (repository.currentUser != null)
     //   return left(repository.currentUser);
     // else
     //   return right('no user');
   }
 
-  Future<void> signOut() async {
-    final repository = ref.read(supaAuthRepProvider).signOut();
-    state = const AsyncValue.loading();
+  Future<bool> signOut() async {
+    final repository = ref.read(supaAuthRepProvider);
+    state = await AsyncValue.guard(() => repository.signOut());
+
+    return state.hasError == false;
+    // state = const AsyncValue.loading();
     // state = await AsyncValue.guard(() =>);
   }
 }

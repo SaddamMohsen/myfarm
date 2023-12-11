@@ -1,4 +1,6 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myfarm/features/common/application/network_provider.dart';
 import 'package:myfarm/features/production/domain/repositories/ambers_repository.dart';
 import 'package:myfarm/features/production/infrastructur/repositories/supabase_amber_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,6 +12,11 @@ import 'package:myfarm/config/provider.dart';
 //initialize the amberRepository provider
 //@Riverpod(keepAlive:true)
 final amberRepositoryProvider = Provider.autoDispose((ref) {
+  final internetConnection = ref.watch(networkAwareProvider);
+  print('check net in amber repo ${internetConnection}');
+  if (internetConnection != NetworkStatus.On) {
+    throw AssertionError('لا يوجد اتصال انترنت');
+  }
   final user = ref.watch(supaAuthRepProvider.select((v) => v.currentUser));
   if (user == null) throw AssertionError('لم تقم بتسجيل الدخول');
 

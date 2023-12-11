@@ -1,100 +1,275 @@
+---------FUNCTION TO GET THE MONTHLY REPORT OF AMBER----------
+-------args f_id int , into_date mean which date you want to get the remain egg to-----
+--------- HOW TO USE select * from get_amber_monthly_report (2, 1, '2023-12-20'::date)------
+---------- rETURN SET OF amber_daily_report2 -------------
 
-----------select ramining carton and tray the calculate cartons and tray---
-with tray_carton(remCarton,remTray) as
-(
-select sum("prodCarton")-sum("outCarton") as carton ,sum("prodTray")-sum("outTray") as tray from production where amber_id=1 and farm_id=1
+create or replace function get_amber_monthly_report(f_id int,amb_id int,into_date date) returns setof amber_daily_report2 language plpgsql
+as $func$
+declare
+today_report amber_daily_report2;
+
+begin
+for today_report in
+ WITH egg_movement AS (
+    SELECT
+        item_code,
+        farm_id,
+        amber_id,
+        SUM(CASE WHEN item_code = '001-003' THEN quantity ELSE 0 END) AS "outCarton",
+        SUM(CASE WHEN item_code = '001-004' THEN quantity ELSE 0 END) AS "outtry",
+        SUM(CASE WHEN item_code = '001-002' THEN quantity ELSE 0 END) AS "out_feed",
+        STRING_AGG(quantity || '-' || notes, ',') AS notes,
+        movement_date
+    FROM items_movement
+    WHERE amber_id = amb_id
+        AND farm_id = f_id
+        AND EXTRACT(MONTH FROM movement_date) = EXTRACT(MONTH FROM into_date)
+    GROUP BY (item_code, movement_date, amber_id, farm_id)
+),
+
+production_data AS (
+    SELECT
+        farm_id,
+        amber_id,
+        "prodDate",
+        COALESCE(death, 0) AS death,
+        COALESCE(incom_feed, 0) AS incom_feed,
+        COALESCE(intak_feed, 0) AS intak_feed,
+        COALESCE("prodTray", 0) AS "prod_tray",
+        COALESCE("prodCarton", 0) AS "prod_carton"
+    FROM production
+    WHERE farm_id = f_id
+        AND amber_id = amb_id
+        AND EXTRACT(MONTH FROM "prodDate") = EXTRACT(MONTH FROM into_date)
+        AND EXTRACT(year FROM "prodDate") = EXTRACT(year FROM into_date)
 )
+ select
+    COALESCE(em.movement_date, p."prodDate") AS in_date,
+    COALESCE(p.death,0),
+    COALESCE(p.incom_feed,0),
+    COALESCE(p.intak_feed,0) + COALESCE(em.out_feed, 0) AS out_feed,
+    COALESCE(
+        (SELECT * FROM get_remaining_feed(f_id::INT, amb_id::INT, em.movement_date)),
+        (SELECT * FROM get_remaining_feed(f_id::INT, amb_id::INT, p."prodDate"))
+    ) AS remin_feed,
+    COALESCE(p.prod_tray,0),
+    COALESCE(p.prod_carton,0),
+    COALESCE(em.outtry, 0) AS out_tray,
+    COALESCE(em."outCarton", 0) AS out_carton,
+    COALESCE(em.notes,'لايوجد'),
+    (
+        SELECT calculate_inventory_report(f_id::INT, amb_id::INT, COALESCE(em.movement_date, p."prodDate"))
+    ) AS remin_egg
+FROM egg_movement AS em
+FULL JOIN production_data AS p ON em.movement_date = p."prodDate"
+and  (p.amber_id=amb_id
+    AND  p.farm_id=f_id)
+      and (EXTRACT(month from p."prodDate") = extract(month from into_date)
+  and EXTRACT(year from p."prodDate") = extract(year from into_date))
+  order by in_date 
+  loop
+       return next today_report;
+  end loop;
+  --end if;
+end
+$func$
+;
+
+-----------------------FUNCTION TO GET REMAIN EGG BY FARM-----------
+-------------------args f_id int , into_date mean which date you want to get the remain egg to
+-------------------------how to use// select * from get_remain_egg_by_farm(2,'2023-10-12')-----
+------------------------return int[]-------------------
+
+create or replace function get_remain_egg_by_farm(f_id int,into_date date) returns int[] language plpgsql
+as $body$
+declare
+egg_arr int[];
+begin
+
+WITH egg_from_items_movs(outtray,outcarton) AS (
+    SELECT
+        SUM(CASE WHEN i.item_code = '001-004' THEN i.quantity ELSE 0 END) AS outtray,
+        SUM(CASE WHEN i.item_code = '001-003' THEN i.quantity ELSE 0 END) AS outcarton
+    FROM items_movement AS i
+    WHERE
+        i.type_movement = 'خارج'
+        AND i.movement_date <= into_date
+        AND farm_id = f_id
+    GROUP BY i.farm_id
+), tray_carton AS (
+    SELECT
+        coalesce(SUM("prodCarton"), 0) - coalesce(SUM("outCarton"), 0) AS remCarton,
+        coalesce(SUM("prodTray"), 0) - coalesce(SUM("outTray"), 0) AS remTray
+    FROM production
+    WHERE
+        production."prodDate" <= into_date AND
+        farm_id = f_id
+),real_amount as(
+
+SELECT
+   coalesce( tray_carton.remTray,0)-(SELECT
+   coalesce((select coalesce(outtray,0) as tray from egg_from_items_movs),0)) AS totalTray,
+  coalesce( tray_carton.remCarton,0)-(SELECT
+   coalesce((select coalesce(outcarton,0) as carton from egg_from_items_movs),0)) AS totalCarton
+FROM tray_carton
+)
+ 
+  select 
+  calculate_egg 
+    (
+      (select totalTray from real_amount)::INT,
+       (select totalCarton from real_amount)::INT
+  )into  egg_arr;
+ return egg_arr;
+end
+$body$
+/////////////
+----------------------
+
+
+
+-----------------Function to get the month report by farm-----------
+---------------------args f_id int means farm_id and rep_date date means month of report---
+-----------------select * from get_farm_month_report(1,'2023-11-20')------------
+-------------retutn type of month report---------------
+create or replace function get_farm_month_report(f_id int,rep_date date) returns setof month_report  language plpgsql
+as $func$
+declare
+farm_month_rep month_report;
+begin
+
+ for farm_month_rep in select
+  p."prodDate",
+  sum(p.death) as death,
+  sum(incom_feed) as incomFeed,
+  sum(intak_feed) as intakFeed
+  ,
+  (
+    select
+      *
+    from
+      get_remaining_feed (farm_id::INT, 0::INT, "prodDate")
+  ) as reminFeed,
+ ( select * from calculate_egg(sum("prodTray")::INT, sum("prodCarton")::INT) )as prodEggs,
+  --sum("prodCarton") as prodcarton,
+  --sum("prodTray") as prodtray,
+  (select *from calculate_egg((
+    sum("outTray") + coalesce(
+    (
+      select
+       sum( quantity)
+      from
+        items_movement
+      where
+        item_code = '001-004'
+        and farm_id = p.farm_id
+        and movement_date = p."prodDate"
+    ),
+    0
+  ))::INT,
+    (sum("outCarton") + coalesce(
+    (
+      select
+        sum(quantity)
+      from
+        items_movement
+      where
+        item_code = '001-003'
+        and farm_id = p.farm_id
+        and movement_date = p."prodDate"
+    ),
+    0
+  ))::INT))as outEgg,
+
+ (select * from get_remain_egg_by_farm(p.farm_id::INT,p."prodDate"::Date)) as remainegg
+
+from
+  production as p
+where
+  p.farm_id = f_id
+  and extract(
+    month
+    from
+      p."prodDate"
+  ) = extract(
+    month
+    from
+     rep_date
+  )
+group by
+  (p.farm_id, p."prodDate")
+order by
+  p."prodDate" asc
+  loop
+  return next farm_month_rep;
+  end loop;
+end;
+$func$
+////////////////////////
+
+
+
+
+
+
 
 --select remCarton,remTray from tray_carton;
 
 select calculate_egg(( select remTray::INT from tray_carton ),(select remCarton::INT from tray_carton));
 
----------select out tray and cartons from items_movement table---
---get trays and carton from items_movement
-with egg_from_items_movs(outTray,outCarton) as
-(
-    select (select sum(quantity) from items_movement where item_code='001-004' and type_movement='خارج' and amber_id=i.amber_id and farm_id=i.farm_id  ) as tray, sum(quantity) as carton from items_movement as i  where item_code='001-003' and type_movement='خارج' and amber_id=1 and farm_id=1
-    group by(i.amber_id,i.farm_id)
-)
+
 
 ------ after merge up select
---get trays and carton from items_movement
 
---get trays and carton from items_movement
-with
-  egg_from_items_movs (outTray, outCarton) as (
-    select
-      (
-        select
-          sum(quantity)
-        from
-          items_movement
-        where
-          item_code = '001-004'
-          and type_movement = 'خارج'
-          and amber_id = i.amber_id
-          and farm_id = i.farm_id
-      ) as tray,
-      sum(quantity) as carton
-    from
-      items_movement as i
-    where
-      item_code = '001-003'
-      and type_movement = 'خارج'
-      and amber_id = 2
-      and farm_id = 1
-    group by
-      (i.amber_id, i.farm_id)
-  ),
-  tray_carton (remCarton, remTray) as (
-    select
-      sum("prodCarton") - sum("outCarton") as carton,
-      sum("prodTray") - sum("outTray") as tray
-    from
-      production
-    where
-      amber_id = 2
-      and farm_id = 1
-  )
-  
 
-  --call calculate_egg function to get the result of remaining eggs 
-select
-  calculate_egg (
+////////////////////
+----------- function to get remaining eggs in farm --------
+---------- argument f_id int mean farm_id, into_date mean calculate the remaining egg into this date-------
+--------- return array of int first tray second carton-------
+create or replace function get_remain_egg_by_farm(f_id int,into_date date) returns int[] language plpgsql
+as $body$
+declare
+egg_arr int[];
+begin
+
+WITH egg_from_items_movs(outtray,outcarton) AS (
+    SELECT
+        SUM(CASE WHEN i.item_code = '001-004' THEN i.quantity ELSE 0 END) AS outtray,
+        SUM(CASE WHEN i.item_code = '001-003' THEN i.quantity ELSE 0 END) AS outcarton
+    FROM items_movement AS i
+    WHERE
+        i.type_movement = 'خارج'
+        AND i.movement_date <= into_date
+        AND farm_id = f_id
+    GROUP BY i.farm_id
+), tray_carton AS (
+    SELECT
+        coalesce(SUM("prodCarton"), 0) - coalesce(SUM("outCarton"), 0) AS remCarton,
+        coalesce(SUM("prodTray"), 0) - coalesce(SUM("outTray"), 0) AS remTray
+    FROM production
+    WHERE
+        production."prodDate" <= into_date AND
+        farm_id = f_id
+),real_amount as(
+
+SELECT
+   coalesce( tray_carton.remTray,0)-(SELECT
+   coalesce((select coalesce(outtray,0) as tray from egg_from_items_movs),0)) AS totalTray,
+  coalesce( tray_carton.remCarton,0)-(SELECT
+   coalesce((select coalesce(outcarton,0) as carton from egg_from_items_movs),0)) AS totalCarton
+FROM tray_carton
+)
+ 
+  select 
+  calculate_egg 
     (
-      select
-        (
-          (
-            select
-              remTray
-            from
-              tray_carton
-          ) - (
-            select
-              outTray
-            from
-              egg_from_items_movs
-          )
-        ) as remainEgg
-    )::INT,
-    (
-      select
-        (
-          (
-            select
-              remCarton
-            from
-              tray_carton
-          ) - (
-            select
-              outCarton
-            from
-              egg_from_items_movs
-          )
-        ) as remainCar
-    )::INT
-  );
-
+      (select totalTray from real_amount)::INT,
+       (select totalCarton from real_amount)::INT
+  )into  egg_arr;
+ return egg_arr;
+end
+$body$
+////////////////
 
 /////////////////////////////////////
 ----------Function to get the remaining eggs in carton and tray ----
@@ -108,8 +283,6 @@ declare
 egg_arr int[];
 
 
-
---get trays and carton from items_movement
 begin
 
 --get trays and carton from items_movement
@@ -137,8 +310,8 @@ with
         and movement_date <=toDate
       --and amber_id = 3
       and farm_id = farmId
-    group by
-      ( i.farm_id)
+    -- group by
+    --   ( i.farm_id)
   ),
   tray_carton (remCarton, remTray) as (
     select
@@ -195,6 +368,7 @@ with
 
 ------------------ function to get the remaining_feed in amber----
 ------------- argument farm_id , amber_id ,toDate -----------
+------ if ambid in argument is 0 then return remaining in the farm----
 --------------retutn numeric value remain_feed--------
 ------------how to use  select * from get_remaining_feed(1,1,'2023-11-11)-----
 create or replace function get_remaining_feed(fid int,ambid int,toDate timestamp) returns numeric language plpgsql
@@ -203,6 +377,7 @@ declare
 remain_feed numeric;
 begin
 --remain_feed :=
+if(ambid>0) then
 select
  coalesce(sum(incom_feed),0) - coalesce(sum(intak_feed),0) - (
     select
@@ -224,7 +399,32 @@ where
   and pro.amber_id = ambid
 group by
   (pro.amber_id, pro.farm_id) into remain_feed;
+else
+select
+ coalesce(sum(incom_feed),0) - coalesce(sum(intak_feed),0) - (
+    select
+     coalesce(sum(quantity),0)
+    from
+      items_movement
+    where
+      item_code = '001-002'
+      and type_movement = 'خارج'
+      and movement_date <=toDate
+      --and amber_id = pro.amber_id
+      and farm_id = pro.farm_id
+  ) as remainFeed
+from
+  production as pro
+where
+  pro."prodDate" <=toDate
+  and pro.farm_id = fid
+  --and pro.amber_id = ambid
+group by
+  ( pro.farm_id) into remain_feed;
+  end if;
+  
 return remain_feed;
+
 end;
 $body$
 
@@ -232,11 +432,14 @@ $body$
 --------------------- FUNCTION FOR GET DAILY REPORT BY AMBER AND DATE--------
 ----------------- argument f_id mean farm_id and amb_id mean amber_id and toDate mean date of report
 -----------------how to use select * from get_daily_report(2,1,'2023-11-11')     ----------------------
-create or replace function get_daily_report(f_id int,amb_id int,toDate data) returns setof amber_daily_report language plpgsql
+
+create or replace function get_daily_report(f_id int,amb_id int,repDate date) returns setof amber_daily_report language plpgsql
 as $func$
 declare
 today_report amber_daily_report;
+--reportDate date := TO_DATE(repDate,'YYYYMMDD');
 begin
+if amb_id>0 then
   for today_report in select
   amber_id,
   death,
@@ -254,20 +457,57 @@ begin
   (
     select 
       calculate_inventory_report(f_id::INT, amb_id::INT, "prodDate")
-  ) as remainEgg
+  ) as reminEgg
 from
   production as p
 where
   p.farm_id = f_id
   and p.amber_id = amb_id
-  and p."prodDate" = toDate
+  and p."prodDate" = repDate
   limit 1
   loop
 
        return next today_report;
   
   end loop;
+  --return all ambers report
+ else
+ for today_report in select
+  amber_id,
+  death,
+  incom_feed,
+  intak_feed,
+  (
+    select * from
+      get_remaining_feed(f_id::INT, p.amber_id::INT, "prodDate")
+  )::numeric as remain_feed,
+  "prodCarton",
+  "prodTray",
+  "outCarton"+coalesce((select quantity from items_movement where item_code='001-003' and amber_id=p.amber_id and farm_id=p.farm_id and movement_date=p."prodDate"),0),
+  "outTray" + coalesce((select quantity from items_movement where item_code='001-004' and amber_id=p.amber_id and farm_id=p.farm_id and movement_date=p."prodDate"),0),
+  "outEggsNote",
+  (
+    select 
+      calculate_inventory_report(f_id::INT, p.amber_id::INT, "prodDate")
+  ) as reminEgg
+from
+  production as p
+where
+  p.farm_id = f_id
+  --and p.amber_id = amb_id
+  and p."prodDate" = repDate
+  --limit 1
+  loop
 
-end;
+       return next today_report;
+  
+  end loop;
+  end if;
+
+
+
+end
 $func$
+;
+
 ------------------------------------------
