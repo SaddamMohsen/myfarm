@@ -23,15 +23,22 @@ class SupabaseAmbersRepository implements FarmRepository {
     int noOfAmber = 0;
     List<Amber> amList = [];
     final int farmId = user.userMetadata?['farm_id'];
-    try {
-      final response =
-          await supabaseClient.from('farms').select().eq('id', farmId).single();
+    final String schema = user.userMetadata?['schema'] ?? 'public';
 
+    try {
+      final response = await supabaseClient
+          .useSchema(schema)
+          .from('farms')
+          .select()
+          .eq('id', farmId)
+          .single();
+      print(response);
       noOfAmber = response['no_of_ambers'];
 
       amList = [for (var i = 1; i <= noOfAmber; i++) Amber(id: i)].toList();
     } catch (e) {
-      throw e.toString();
+      print(e.toString());
+      throw Failure.unprocessableEntity(message: e.toString());
       //print('Error in fetching from firebase' + e.toString());
     }
 
@@ -41,8 +48,10 @@ class SupabaseAmbersRepository implements FarmRepository {
   @override
   Future<List<Item>> getItemsName() async {
     List<Item> itemsList = [];
+    final String schema = user.userMetadata?['schema'] ?? 'public';
     try {
       itemsList = await supabaseClient
+          .useSchema(schema)
           .from('items')
           .select()
           .withConverter<List<Item>>(
@@ -60,6 +69,9 @@ class SupabaseAmbersRepository implements FarmRepository {
       {required DailyDataModel todayData}) async {
     // String respone = 'success';
     final int farmId = user.userMetadata?['farm_id'];
+    final String schema = user.userMetadata?['schema'] ?? 'public';
+
+    supabaseClient.useSchema(schema);
     Map<String, dynamic> map = {
       'farm_id': farmId,
       ...todayData.toSupabasJson(),
@@ -69,6 +81,7 @@ class SupabaseAmbersRepository implements FarmRepository {
     try {
       //Indicator.showLoading();
       final res = await supabaseClient
+          .useSchema(schema)
           .from(const ProductionSupabaseTable().tableName)
           .insert({
             const ProductionSupabaseTable().farmId: map['farm_id'],
@@ -106,8 +119,12 @@ class SupabaseAmbersRepository implements FarmRepository {
     List<DailyDataModel> listData = [];
 
     final int farmId = user.userMetadata?['farm_id'];
+    final String schema = user.userMetadata?['schema'] ?? 'public';
+
+    //supabaseClient.useSchema(schema);
     try {
       listData = await supabaseClient
+          .useSchema(schema)
           .from(const ProductionSupabaseTable().tableName)
           .select()
           .eq(const ProductionSupabaseTable().prodDate, prodDate)
@@ -129,6 +146,7 @@ class SupabaseAmbersRepository implements FarmRepository {
       // itemsData.forEach((element) =>
       //     print('${element.runtimeType} :${element.movementDate.runtimeType}'));
       final int farmId = user.userMetadata?['farm_id'];
+      final String schema = user.userMetadata?['schema'] ?? 'public';
       //dynamic res;
       ///Check if thes list is empty
       if (itemsData.isEmpty) throw const Failure.empty();
@@ -139,6 +157,7 @@ class SupabaseAmbersRepository implements FarmRepository {
         };
 
         await supabaseClient
+            .useSchema(schema)
             .from(const ItemsMovementTable().tableName)
             .insert(map)
             .select()
@@ -165,6 +184,7 @@ class SupabaseAmbersRepository implements FarmRepository {
   Future<Either<Failure, DailyDataModel>> updateDailyData(
       {required DailyDataModel todayData, required int rowId}) async {
     final int farmId = user.userMetadata?['farm_id'];
+    final String schema = user.userMetadata?['schema'] ?? 'public';
     Map<String, dynamic> map = {
       'id': rowId,
       'farm_id': farmId,
@@ -175,6 +195,7 @@ class SupabaseAmbersRepository implements FarmRepository {
     try {
       //Indicator.showLoading();
       final res = await supabaseClient
+          .useSchema(schema)
           .from(const ProductionSupabaseTable().tableName)
           .update({
             const ProductionSupabaseTable().farmId: map['farm_id'],

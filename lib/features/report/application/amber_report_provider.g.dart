@@ -492,5 +492,184 @@ class _AmberMonthReportProviderElement
   @override
   DateTime get repDate => (origin as AmberMonthReportProvider).repDate;
 }
+
+String _$outItemsDailyReportHash() =>
+    r'057d3841ffd3381dc59c41e9fb2df2272eb47d41';
+
+///Get daily out items by ambers and type
+///
+/// Copied from [outItemsDailyReport].
+@ProviderFor(outItemsDailyReport)
+const outItemsDailyReportProvider = OutItemsDailyReportFamily();
+
+///Get daily out items by ambers and type
+///
+/// Copied from [outItemsDailyReport].
+class OutItemsDailyReportFamily
+    extends Family<AsyncValue<List<ItemsMovement>>> {
+  ///Get daily out items by ambers and type
+  ///
+  /// Copied from [outItemsDailyReport].
+  const OutItemsDailyReportFamily();
+
+  ///Get daily out items by ambers and type
+  ///
+  /// Copied from [outItemsDailyReport].
+  OutItemsDailyReportProvider call({
+    required String itemCode,
+    required int amberId,
+    required DateTime repDate,
+  }) {
+    return OutItemsDailyReportProvider(
+      itemCode: itemCode,
+      amberId: amberId,
+      repDate: repDate,
+    );
+  }
+
+  @override
+  OutItemsDailyReportProvider getProviderOverride(
+    covariant OutItemsDailyReportProvider provider,
+  ) {
+    return call(
+      itemCode: provider.itemCode,
+      amberId: provider.amberId,
+      repDate: provider.repDate,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'outItemsDailyReportProvider';
+}
+
+///Get daily out items by ambers and type
+///
+/// Copied from [outItemsDailyReport].
+class OutItemsDailyReportProvider
+    extends AutoDisposeFutureProvider<List<ItemsMovement>> {
+  ///Get daily out items by ambers and type
+  ///
+  /// Copied from [outItemsDailyReport].
+  OutItemsDailyReportProvider({
+    required String itemCode,
+    required int amberId,
+    required DateTime repDate,
+  }) : this._internal(
+          (ref) => outItemsDailyReport(
+            ref as OutItemsDailyReportRef,
+            itemCode: itemCode,
+            amberId: amberId,
+            repDate: repDate,
+          ),
+          from: outItemsDailyReportProvider,
+          name: r'outItemsDailyReportProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$outItemsDailyReportHash,
+          dependencies: OutItemsDailyReportFamily._dependencies,
+          allTransitiveDependencies:
+              OutItemsDailyReportFamily._allTransitiveDependencies,
+          itemCode: itemCode,
+          amberId: amberId,
+          repDate: repDate,
+        );
+
+  OutItemsDailyReportProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.itemCode,
+    required this.amberId,
+    required this.repDate,
+  }) : super.internal();
+
+  final String itemCode;
+  final int amberId;
+  final DateTime repDate;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<ItemsMovement>> Function(OutItemsDailyReportRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: OutItemsDailyReportProvider._internal(
+        (ref) => create(ref as OutItemsDailyReportRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        itemCode: itemCode,
+        amberId: amberId,
+        repDate: repDate,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<ItemsMovement>> createElement() {
+    return _OutItemsDailyReportProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OutItemsDailyReportProvider &&
+        other.itemCode == itemCode &&
+        other.amberId == amberId &&
+        other.repDate == repDate;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, itemCode.hashCode);
+    hash = _SystemHash.combine(hash, amberId.hashCode);
+    hash = _SystemHash.combine(hash, repDate.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin OutItemsDailyReportRef
+    on AutoDisposeFutureProviderRef<List<ItemsMovement>> {
+  /// The parameter `itemCode` of this provider.
+  String get itemCode;
+
+  /// The parameter `amberId` of this provider.
+  int get amberId;
+
+  /// The parameter `repDate` of this provider.
+  DateTime get repDate;
+}
+
+class _OutItemsDailyReportProviderElement
+    extends AutoDisposeFutureProviderElement<List<ItemsMovement>>
+    with OutItemsDailyReportRef {
+  _OutItemsDailyReportProviderElement(super.provider);
+
+  @override
+  String get itemCode => (origin as OutItemsDailyReportProvider).itemCode;
+  @override
+  int get amberId => (origin as OutItemsDailyReportProvider).amberId;
+  @override
+  DateTime get repDate => (origin as OutItemsDailyReportProvider).repDate;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

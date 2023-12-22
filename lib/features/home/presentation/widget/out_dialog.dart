@@ -65,7 +65,7 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print('build out dialog');
+    //print('build out dialog');
 
     outForm.control('movement_date').value = widget.date;
     final AsyncValue<List<Item>> items = ref.watch(getItemsListProvider);

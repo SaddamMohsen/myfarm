@@ -1,3 +1,4 @@
+import 'package:myfarm/features/production/domain/entities/items_movement.dart';
 import 'package:myfarm/features/report/domain/entities/amber_month_report.dart';
 import 'package:myfarm/features/report/domain/entities/dailyreport.dart';
 import 'package:myfarm/features/report/domain/entities/monthlyreport.dart';
@@ -8,4 +9,6 @@ abstract class ReportRepository {
   Future<List<MonthlyReport>> getMonthlyRepByFarm(DateTime repDate);
   Future<List<AmberMonthlyReport>> getMonthlyRepByAmber(
       int amberId, DateTime intoDate);
+  Future<List<ItemsMovement>> getOutItemsReportByDate(
+      String itemName, int amberId, DateTime repDate);
 }

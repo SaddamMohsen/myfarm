@@ -4,6 +4,7 @@ import 'package:myfarm/features/production/application/add_production_provider.d
 import 'package:myfarm/features/production/domain/repositories/ambers_repository.dart';
 import 'package:myfarm/features/report/application/amber_report_provider.dart';
 import 'package:myfarm/features/report/application/farm_report_provider.dart';
+import 'package:myfarm/features/report/presentation/widgets/out_report_widget.dart';
 import 'package:myfarm/features/report/presentation/widgets/repoort_table.dart';
 import 'package:myfarm/utilities/constants.dart';
 
@@ -22,7 +23,7 @@ class _ReportScreenState extends State<ReportScreen> {
   bool reportForFarm = true;
   dynamic monthdropDownvalue = 0;
   List<DropdownMenuItem<int>> allItem = [
-    DropdownMenuItem<int>(value: 0, child: Text('الكل'))
+    const DropdownMenuItem<int>(value: 0, child: Text('الكل'))
   ];
 
   @override
@@ -34,7 +35,7 @@ class _ReportScreenState extends State<ReportScreen> {
 
   List<DropdownMenuItem<int>> getAmberList(List<Amber> data) {
     List<DropdownMenuItem<int>> newItem = data.map<DropdownMenuItem<int>>((e) {
-      return DropdownMenuItem<int>(child: Text('${e.id} عنبر'), value: e.id);
+      return DropdownMenuItem<int>(value: e.id, child: Text('${e.id} عنبر'));
     }).toList();
     // allItem.addAll(newItem);
     List<DropdownMenuItem<int>> allItems = allItem + newItem;
@@ -55,7 +56,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 // indicatorColor: Theme.of(context).colorScheme.secondary,
                 indicator: BoxDecoration(
                   //color: Theme.of(context).focusColor,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(6),
                       topRight: Radius.circular(6)),
                   //color: Theme.of(context).colorScheme.secondaryContainer,
@@ -79,7 +80,6 @@ class _ReportScreenState extends State<ReportScreen> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-
                   Container(
                       padding: const EdgeInsets.all(6),
                       decoration: const BoxDecoration(
@@ -91,20 +91,9 @@ class _ReportScreenState extends State<ReportScreen> {
                         'تقرير الخارج',
                         style: Theme.of(context).textTheme.bodyMedium,
                       )),
-                  // Card(
-                  //     elevation: 10,
-                  //     shape: BeveledRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(12)),
-                  //     child: Text('تقرير الوارد')),
                   Container(
-                      padding: EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        //color: Theme.of(context).colorScheme.outlineVariant,
-                        // border: Border.all(
-                        //   color: Theme.of(context).colorScheme.primary,
-                        //   width: 1,
-                        //   style: BorderStyle.solid,
-                        // ),
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(6),
                             topRight: Radius.circular(6)),
@@ -121,10 +110,15 @@ class _ReportScreenState extends State<ReportScreen> {
               //crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  flex: 1,
+                  flex: 0,
                   child: Container(
-                    padding: const EdgeInsets.only(bottom: 0),
-                    color: Theme.of(context).primaryColor.withAlpha(100),
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    margin: const EdgeInsets.only(right: 6, left: 6),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -136,9 +130,9 @@ class _ReportScreenState extends State<ReportScreen> {
                           child: Container(
                             width: 120,
                             height: 100,
-                            margin: EdgeInsets.only(right: 4),
+                            margin: const EdgeInsets.only(right: 4),
                             padding: const EdgeInsets.only(
-                                top: 15, left: 6, right: 6),
+                                top: 15, left: 6, right: 6, bottom: 6),
                             decoration: BoxDecoration(
                               //  color: Theme.of(context).primaryColor.withAlpha(50),
                               borderRadius: BorderRadius.circular(12),
@@ -170,7 +164,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                     Container(
                                       width: 90,
                                       height: 40,
-                                      margin: EdgeInsets.only(right: 5),
+                                      margin: const EdgeInsets.only(right: 5),
                                       // padding: EdgeInsets.only(bottom: 15),
                                       decoration: BoxDecoration(
                                           color: Theme.of(context)
@@ -180,7 +174,7 @@ class _ReportScreenState extends State<ReportScreen> {
                                               BorderRadius.circular(12),
                                           border: Border.all(
                                               color: Colors.black,
-                                              width: 2,
+                                              width: 1,
                                               style: BorderStyle.solid)),
                                       child: Directionality(
                                         textDirection: TextDirection.rtl,
@@ -298,7 +292,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 Expanded(
                     flex: 5,
 
-                    ///TODO adding  else if  monthDropDownvalue ==1 and reportTofarm==false then show Monthly  report for amber
+                    ///adding  else if  monthDropDownvalue ==1 and reportTofarm==false then show Monthly  report for amber
 
                     child: (monthdropDownvalue == 1 && dropDownvalue != 0)
                         ? Consumer(
@@ -310,10 +304,14 @@ class _ReportScreenState extends State<ReportScreen> {
                                 data: (data) {
                                   // print(data.length);
 
-                                  return MyReportTable(
-                                    data: data,
-                                    reportDate: widget.repDate,
-                                    repType: reportType.amberMonthly,
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 6),
+                                    child: MyReportTable(
+                                      data: data,
+                                      reportDate: widget.repDate,
+                                      repType: reportType.amberMonthly,
+                                    ),
                                   );
                                 },
                                 error: (err, stackTrace) =>
@@ -333,7 +331,6 @@ class _ReportScreenState extends State<ReportScreen> {
                                       repDate: widget.repDate));
                                   return report.when(
                                     data: (data) {
-                                      print(data);
                                       if (data.amberId == null)
                                         return Text('لا يوجد');
                                       return MyReportTable(
@@ -398,7 +395,10 @@ class _ReportScreenState extends State<ReportScreen> {
                                   )),
               ],
             ),
-            Text('تقرير الخارج قيد الانشاء'),
+
+            OutReportWidget(
+              repDate: widget.repDate,
+            ),
             // Text('تقرير الوارد قيد الانشاء'),
             Text('تقرير المخزون قيد الانشاء'),
           ]),

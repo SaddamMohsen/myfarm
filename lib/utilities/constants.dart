@@ -4,6 +4,7 @@ const Color kIconColor = Color.fromARGB(255, 63, 137, 248);
 const double kIconSize = 40.0;
 const Color kInputTextColor =
     Color(0xffF3F6FC); //Color.fromARGB(255, 253, 251, 251);
+///allowing number from 1 to 11 because tray more than 11 is carton
 const kTrayNumberPattern = r'^([0-9]|1[01])$';
 
 //report type

@@ -138,7 +138,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         });
                       },
                       headerProps: const EasyHeaderProps(
-                          monthPickerType: MonthPickerType.switcher,
+                          monthPickerType:
+                              MonthPickerType.dropDown, //.switcher,
                           selectedDateStyle: TextStyle(
                               fontFamily: 'Tajawal-ExtraBold',
                               fontSize: 14,
@@ -217,31 +218,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         // var newList = [];
                         final dailydata = ref.watch(fetchProductionDataProvider(
                             todayDate: _selectedDate));
-                        // final  dailydata = ref
-                        //     .read(addProductionControllerProvider.notifier)
-                        //     .fetchProductionData(_selectedDate);
-                        // dailydata.then(
-                        //   (value) {
-                        //     if (value.isNotEmpty) {
-                        //       newList = value;
-                        //       return MyDataTable(data: value);
-                        //     } else
-                        //       return const SizedBox(
-                        //           child: Center(
-                        //               child: Text('لاتوجد بيانات لعرضها')));
-                        //   },
-                        //   onError: (err, stack) => Text('Error: $err'),
-                        // );
-                        // if (newList.isNotEmpty) {
-                        //   return MyDataTable(
-                        //       data: newList as List<DailyDataModel>);
-                        // } else
-                        //   return const Center(
-                        //       child: SizedBox(
-                        //     width: 100.0,
-                        //     height: 100.0,
-                        //     child: CircularProgressIndicator(),
-                        //   ));
+
                         return dailydata.when(
                           loading: () => const Center(
                             child: SizedBox(
