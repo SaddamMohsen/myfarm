@@ -49,4 +49,6 @@ class ItemsMovementTable implements SupabaseTable {
   String get amberId => 'amber_id';
   String get itemCode => 'item_code';
   String get quantity => 'quantity';
+  String get moveType => 'type_movement';
+  String get moveDate => 'movement_date';
 }

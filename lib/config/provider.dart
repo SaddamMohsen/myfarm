@@ -1,15 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
-import 'dart:developer' as developer;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfarm/features/authentication/application/supabase_auth_provider.dart';
 import 'package:myfarm/features/common/application/network_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
     show Supabase, SupabaseClient;
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:myfarm/config/apikey.dart';
 
 part 'provider.g.dart';

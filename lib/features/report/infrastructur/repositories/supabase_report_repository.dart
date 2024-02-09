@@ -118,13 +118,12 @@ class SupabaseReportRepository extends ReportRepository {
     }
   }
 
-  ///get Out Items report by date
+  ///get Out Items report in specific date and amber
   @override
   Future<List<ItemsMovement>> getOutItemsReportByDate(
       String itemName, int amberId, DateTime repDate) async {
     final int farmId = user.userMetadata?['farm_id'];
     final String schema = user.userMetadata?['schema'] ?? 'public';
-    print(amberId);
 
     List<ItemsMovement> items;
     try {
@@ -158,6 +157,65 @@ class SupabaseReportRepository extends ReportRepository {
     } catch (e) {
       print('error2 in get items report ${e.toString()}');
       throw const Failure.badRequest();
+    }
+  }
+
+  /// Get out item in month by amber and item_code
+  @override
+  Future<List<ItemsMovement>> getOutItemsReportByMonthForAmber(
+      String itemName, int amberId, DateTime repDate) async {
+    //throw UnimplementedError();
+    final int farmId = user.userMetadata?['farm_id'];
+    final String schema = user.userMetadata?['schema'] ?? 'public';
+    final Map<String, dynamic> param = {
+      "f_id": farmId,
+      'amb_id': amberId,
+      "rep_date": repDate.toIso8601String(),
+      "it_code": itemName,
+      "move_type": 'خارج'
+    };
+    List<ItemsMovement> data;
+    try {
+      data = await supabaseClient
+          .useSchema(schema)
+          .rpc('get_outitems_monthly_by_amber', params: param)
+          .withConverter((data) => DailyDataConverter.itemMovtoList(data));
+
+      return Future.value(data);
+    } on PostgrestException catch (e) {
+      throw Failure.unprocessableEntity(message: e.message.toString());
+    } catch (e) {
+      // print(e.toString());
+      throw Failure.unprocessableEntity(message: e.toString());
+    }
+  }
+
+  /// Get out item in month by farm and item_code
+  @override
+  Future<List<ItemsMovement>> getOutItemsReportByMonthForFarm(
+      String itemName, DateTime repDate) async {
+    //throw UnimplementedError();
+    final int farmId = user.userMetadata?['farm_id'];
+    final String schema = user.userMetadata?['schema'] ?? 'public';
+    final Map<String, dynamic> param = {
+      "f_id": farmId,
+      "rep_date": repDate.toIso8601String(),
+      "it_code": itemName,
+      "move_type": 'خارج'
+    };
+    List<ItemsMovement> data;
+    try {
+      data = await supabaseClient
+          .useSchema(schema)
+          .rpc('get_outitems_monthly_by_farm', params: param)
+          .withConverter((data) => DailyDataConverter.itemMovtoList(data));
+
+      return Future.value(data);
+    } on PostgrestException catch (e) {
+      throw Failure.unprocessableEntity(message: e.message.toString());
+    } catch (e) {
+      // print(e.toString());
+      throw Failure.unprocessableEntity(message: e.toString());
     }
   }
 }

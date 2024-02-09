@@ -6,9 +6,10 @@ import 'package:myfarm/features/home/application/insert_out_items.dart';
 import 'package:myfarm/features/production/domain/entities/items_movement.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
-///The Button to insert a list of out Items into database
+///The Button to insert a list of out or in Items into database
 class UpdateButton extends ConsumerStatefulWidget {
-  const UpdateButton({super.key});
+  const UpdateButton({super.key, required this.moveType});
+  final String moveType;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _UpdateButtonState();
@@ -137,7 +138,7 @@ class _UpdateButtonState extends ConsumerState<UpdateButton> {
                                         formGroup.control('item_code').value,
 
                                     //.toString(),
-                                    'type_movement': 'خارج',
+                                    'type_movement': widget.moveType,
                                     'movement_date': formGroup
                                         .control('movement_date')
                                         .value as DateTime,

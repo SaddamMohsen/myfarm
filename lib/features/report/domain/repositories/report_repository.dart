@@ -11,4 +11,9 @@ abstract class ReportRepository {
       int amberId, DateTime intoDate);
   Future<List<ItemsMovement>> getOutItemsReportByDate(
       String itemName, int amberId, DateTime repDate);
+  Future<List<ItemsMovement>> getOutItemsReportByMonthForAmber(
+      String itemName, int amberId, DateTime repDate);
+
+  Future<List<ItemsMovement>> getOutItemsReportByMonthForFarm(
+      String itemName, DateTime repDate);
 }

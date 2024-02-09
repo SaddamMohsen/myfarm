@@ -10,9 +10,14 @@ import 'package:myfarm/features/production/application/add_production_provider.d
 import 'package:reactive_forms/reactive_forms.dart';
 
 class MyOutDialog extends ConsumerStatefulWidget {
-  const MyOutDialog({super.key, required this.title, required this.date});
+  const MyOutDialog(
+      {super.key,
+      required this.title,
+      required this.date,
+      required this.moveType});
   final String title;
   final DateTime date;
+  final String moveType;
   //final DailyDataModel content;
 
   @override
@@ -66,7 +71,7 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
   @override
   Widget build(BuildContext context) {
     //print('build out dialog');
-
+    outForm.control('type_movement').value = widget.moveType;
     outForm.control('movement_date').value = widget.date;
     final AsyncValue<List<Item>> items = ref.watch(getItemsListProvider);
     final amberMap = ref.watch(fetchAmberProvider);
@@ -114,7 +119,9 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(12.0),
-                              child: const Text('نوع الخارج'),
+                              child: widget.moveType == 'خارج'
+                                  ? const Text('نوع الخارج')
+                                  : const Text('نوع الوارد'),
                             ),
                             items.when(
                                 data: (data) {
@@ -334,18 +341,19 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                                                                 hintTextDirection:
                                                                     TextDirection
                                                                         .rtl,
-                                                                label: Text(
-                                                                  'تفاصيل الخارج',
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodySmall!
-                                                                      .copyWith(
-                                                                          color: Theme.of(context)
-                                                                              .colorScheme
-                                                                              .outline
-                                                                              .withBlue(100)),
-                                                                ),
+                                                                label:
+                                                                    widget.moveType ==
+                                                                            'خارج'
+                                                                        ? Text(
+                                                                            'تفاصيل الخارج',
+                                                                            style:
+                                                                                Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.outline.withBlue(100)),
+                                                                          )
+                                                                        : Text(
+                                                                            'تفاصيل الوارد',
+                                                                            style:
+                                                                                Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.outline.withBlue(100)),
+                                                                          ),
                                                                 hintStyle: Theme.of(
                                                                         context)
                                                                     .textTheme
@@ -354,8 +362,11 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                                                                         color: Theme.of(context)
                                                                             .colorScheme
                                                                             .outlineVariant),
-                                                                hintText:
-                                                                    'تفاصيل الخارج'),
+                                                                hintText: widget
+                                                                            .moveType ==
+                                                                        'خارج'
+                                                                    ? 'تفاصيل الخارج'
+                                                                    : 'تفاصيل الوارد'),
                                                         // .numberWithOptions(
                                                         // decimal:
                                                         //     true),
@@ -382,9 +393,11 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                               loading: () =>
                                   const CircularProgressIndicator.adaptive(),
                             )
-                          : const Padding(
+                          : Padding(
                               padding: EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text('قم بتحديد نوع الخارج'),
+                              child: widget.moveType == 'خارج'
+                                  ? const Text('قم بتحديد نوع الخارج')
+                                  : const Text('قم بتحديد نوع الوارد'),
                             ),
                     ),
                     /*ReactiveForm(
@@ -431,7 +444,9 @@ class _MyOutDialogState extends ConsumerState<MyOutDialog> {
                           ///check if the form values is valid and out notes contain text
                           ///then show update button else show sizeBox
                           if (outForm.valid && outForm.control('notes').dirty) {
-                            return const UpdateButton();
+                            return UpdateButton(
+                              moveType: widget.moveType,
+                            );
                           } else {
                             return const SizedBox();
                           }

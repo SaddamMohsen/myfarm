@@ -355,7 +355,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       showDialog(
                           context: context,
                           builder: ((context) => MyOutDialog(
-                              title: 'بيانات الخارج', date: _selectedDate)));
+                                title: 'بيانات الخارج',
+                                date: _selectedDate,
+                                moveType: 'خارج',
+                              )));
                       final state = _key.currentState;
                       if (state != null) {
                         debugPrint('isOpen:${state.isOpen}');
@@ -366,6 +369,50 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   icon: const Icon(Icons.outbond),
                   label: const Text('اضافة الخارج')),
 
+// button for open in dialoge
+              ElevatedButton.icon(
+                  onPressed: () {
+                    if (_selectedDate.isAfter(DateTime.now())) {
+                      ScaffoldMessenger.of(context).showMaterialBanner(
+                          MaterialBanner(
+                              content: const Text(
+                                  "لا يمكنك أضافة وارد بتاريخ أكبر من تاريخ اليوم"),
+                              actions: [
+                            Row(
+                              children: [
+                                ElevatedButton.icon(
+                                    onPressed: () {
+                                      // print('hhhh');
+                                      ScaffoldMessenger.of(context)
+                                          .clearMaterialBanners();
+                                      // .hideCurrentMaterialBanner();
+                                    },
+                                    icon: const Icon(Icons.abc_outlined),
+                                    label: const Text('اخفاء')),
+                              ],
+                            )
+                          ]));
+                      // ScaffoldMessenger.of(context).showSnackBar(mySnackBar(
+                      //     context,
+                      //     "لا يمكنك أضافة خارج بتاريخ أكبر من تاريخ اليوم"));
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: ((context) => MyOutDialog(
+                                title: 'بيانات الوارد',
+                                date: _selectedDate,
+                                moveType: 'وارد',
+                              )));
+                      final state = _key.currentState;
+                      if (state != null) {
+                        debugPrint('isOpen:${state.isOpen}');
+                        state.toggle();
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.outbond),
+                  label: const Text('اضافة الوارد')),
+
               ///button for logout
               Consumer(
                 builder: (context, ref, child) => ElevatedButton.icon(
@@ -374,6 +421,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ref.invalidate(amberRepositoryProvider);
                       ref.invalidate(authControllerProvider);
                       ref.invalidate(supaAuthRepProvider);
+
                       // ref.invalidate(supabaseClientProvider);
                       Navigator.pushNamedAndRemoveUntil(
                           context, '/loginpage', (route) => false);

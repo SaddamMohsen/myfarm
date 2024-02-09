@@ -4,7 +4,9 @@ import 'package:myfarm/features/home/application/get_items_list_data.dart';
 import 'package:myfarm/features/production/application/add_production_provider.dart';
 import 'package:myfarm/features/production/domain/repositories/ambers_repository.dart';
 import 'package:myfarm/features/report/application/amber_report_provider.dart';
+import 'package:myfarm/features/report/application/farm_report_provider.dart';
 import 'package:myfarm/features/report/presentation/widgets/out_item_table.dart';
+import 'package:myfarm/utilities/constants.dart';
 
 class OutReportWidget extends ConsumerStatefulWidget {
   const OutReportWidget({super.key, required this.repDate});
@@ -274,34 +276,99 @@ class _OutReportWidgetState extends ConsumerState<OutReportWidget> {
         ),
         Expanded(
             flex: 4,
-            child: Consumer(
-              builder: (context, ref, child) {
-                final report = ref.watch(outItemsDailyReportProvider(
-                    itemCode: itemCode,
-                    amberId: dropDownvalue,
-                    repDate: widget.repDate));
 
-                return report.when(
-                  data: (data) {
-                    return data.isNotEmpty
-                        ? OutItemTable(
-                            data: data,
-                            reportDate: widget.repDate,
-                            //repType: reportType.monthly,
-                          )
-                        : Center(
-                            child: Text(
-                              'لا توجد بيانات متعلقه بهذا الصنف',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+            ///TODO add conditions to select report
+            child: (monthdropDownvalue == 2 && dropDownvalue == 0)
+                ? Consumer(
+                    builder: (context, ref, child) {
+                      final report = ref.watch(
+                          outItemsMonthlyReportByFarmProvider(
+                              itemCode: itemCode, repDate: widget.repDate));
+
+                      return report.when(
+                        data: (data) {
+                          return data.isNotEmpty
+                              ? OutItemTable(
+                                  data: data,
+                                  reportDate: widget.repDate,
+                                  repType: reportType.amberMonthly,
+                                )
+                              : Center(
+                                  child: Text(
+                                    'لا توجد بيانات متعلقه بهذا الصنف',
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                );
+                        },
+                        error: (err, stackTrace) => Text(err.toString()),
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                  )
+                : (monthdropDownvalue == 1 && dropDownvalue >= 1)
+                    ? Consumer(
+                        builder: (context, ref, child) {
+                          final report = ref.watch(
+                              outItemsMonthlyReportByAmberProvider(
+                                  itemCode: itemCode,
+                                  amberId: dropDownvalue,
+                                  repDate: widget.repDate));
+
+                          return report.when(
+                            data: (data) {
+                              return data.isNotEmpty
+                                  ? OutItemTable(
+                                      data: data,
+                                      reportDate: widget.repDate,
+                                      repType: reportType.monthly,
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'لا توجد بيانات متعلقه بهذا الصنف',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge,
+                                      ),
+                                    );
+                            },
+                            error: (err, stackTrace) => Text(err.toString()),
+                            loading: () => const Center(
+                                child: CircularProgressIndicator()),
                           );
-                  },
-                  error: (err, stackTrace) => Text(err.toString()),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                );
-              },
-            )),
+                        },
+                      )
+                    : Consumer(
+                        builder: (context, ref, child) {
+                          final report = ref.watch(outItemsDailyReportProvider(
+                              itemCode: itemCode,
+                              amberId: dropDownvalue,
+                              repDate: widget.repDate));
+
+                          return report.when(
+                            data: (data) {
+                              return data.isNotEmpty
+                                  ? OutItemTable(
+                                      data: data,
+                                      reportDate: widget.repDate,
+                                      //repType: reportType.monthly,
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'لا توجد بيانات متعلقه بهذا الصنف',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge,
+                                      ),
+                                    );
+                            },
+                            error: (err, stackTrace) => Text(err.toString()),
+                            loading: () => const Center(
+                                child: CircularProgressIndicator()),
+                          );
+                        },
+                      )),
       ],
     );
   }

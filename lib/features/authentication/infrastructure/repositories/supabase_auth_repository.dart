@@ -23,7 +23,7 @@ class SupabaseAuthRepository extends AuthRepository {
     final response =
         await authClient.recoverSession(currentSession!.accessToken.toString());
     final user = response.user;
-    print(user);
+    //print(user);
     return user;
   }
 

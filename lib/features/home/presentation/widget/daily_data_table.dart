@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:myfarm/features/home/presentation/widget/edit_dialog.dart';
 import 'package:myfarm/features/production/domain/entities/dailydata.dart';
 
+import '../../../report/presentation/report_screen.dart';
+
 class MyDataTable extends StatelessWidget {
   const MyDataTable({super.key, required this.data});
   final List<DailyDataModel> data;
@@ -167,9 +169,20 @@ class _DataSource extends DataTableSource {
     // if index greater than length so return the total row else return rows
     if (index >= data.length) {
       return DataRow(cells: [
-        const DataCell(
+        DataCell(
           Center(
-            child: Icon(Icons.wysiwyg),
+            child: InkWell(
+                child: const Icon(Icons.wysiwyg),
+                onTap: () {
+                  //on press this show report page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ReportScreen(repDate: data[0].prodDate)),
+                  ).onError(
+                      (error, stackTrace) => debugPrint(error.toString()));
+                }),
           ),
         ),
         DataCell(Center(

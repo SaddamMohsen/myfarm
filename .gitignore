@@ -20,7 +20,8 @@ migrate_working_dir/
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
-
+*.g.dart 
+*.freezed.dart
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
@@ -34,6 +35,7 @@ migrate_working_dir/
 apikey.dart
 # Symbolication related
 app.*.symbols
+#
 
 # Obfuscation related
 app.*.map.json

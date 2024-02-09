@@ -51,3 +51,17 @@ Future<List<ItemsMovement>> outItemsDailyReport(OutItemsDailyReportRef ref,
   final repository = ref.watch(reportRepositoryProvider);
   return repository.getOutItemsReportByDate(itemCode, amberId, repDate);
 }
+
+///Get out Item by amber and month and itemCode
+@riverpod
+Future<List<ItemsMovement>> outItemsMonthlyReportByAmber(
+    OutItemsMonthlyReportByAmberRef ref,
+    {required String itemCode,
+    required int amberId,
+    required DateTime repDate}) {
+  final repository = ref.watch(reportRepositoryProvider);
+  return repository.getOutItemsReportByMonthForAmber(
+      itemCode, amberId, repDate);
+}
+
+///Get out Item by amber in month and itemCode

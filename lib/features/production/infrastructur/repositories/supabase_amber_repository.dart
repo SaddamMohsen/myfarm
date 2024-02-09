@@ -100,14 +100,14 @@ class SupabaseAmbersRepository implements FarmRepository {
           })
           .select()
           .withConverter(DailyDataConverter.toSingle);
-      print('in repos $res');
+      //print('in repos $res');
       return right(res);
     } on PostgrestException catch (error) {
-      print('error in add production ${error.message}');
+      //print('error in add production ${error.message}');
       return left(Failure.unprocessableEntity(message: error.message));
       //throw (error.message);
     } catch (error) {
-      print('error in add production2 ${error.toString()}');
+      //print('error in add production2 ${error.toString()}');
       return left(Failure.unprocessableEntity(message: error.toString()));
       //throw (error.toString());
     }
@@ -215,7 +215,7 @@ class SupabaseAmbersRepository implements FarmRepository {
           .eq('id', rowId)
           .select()
           .withConverter(DailyDataConverter.toSingle);
-      print('in upda $res');
+      //print('in upda $res');
       return right(res);
     } on PostgrestException catch (error) {
       return left(Failure.unprocessableEntity(message: error.message));

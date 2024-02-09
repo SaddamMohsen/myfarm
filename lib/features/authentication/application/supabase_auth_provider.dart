@@ -19,7 +19,7 @@ SupabaseAuthRepository supaAuthRep(SupaAuthRepRef ref) {
   if (internetConnection != NetworkStatus.On) {
     throw AssertionError('لا يوجد اتصال انترنت');
   }
-  print('after throw error');
+  //print('after throw error');
   final authClient = ref.watch(supabaseClientProvider).auth;
   return SupabaseAuthRepository(authClient: authClient);
 }

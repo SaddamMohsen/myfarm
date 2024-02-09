@@ -671,5 +671,188 @@ class _OutItemsDailyReportProviderElement
   @override
   DateTime get repDate => (origin as OutItemsDailyReportProvider).repDate;
 }
+
+String _$outItemsMonthlyReportByAmberHash() =>
+    r'df4a82e74b2c361119fd472222f4a2979be0b909';
+
+///Get out Item by amber and month and itemCode
+///
+/// Copied from [outItemsMonthlyReportByAmber].
+@ProviderFor(outItemsMonthlyReportByAmber)
+const outItemsMonthlyReportByAmberProvider =
+    OutItemsMonthlyReportByAmberFamily();
+
+///Get out Item by amber and month and itemCode
+///
+/// Copied from [outItemsMonthlyReportByAmber].
+class OutItemsMonthlyReportByAmberFamily
+    extends Family<AsyncValue<List<ItemsMovement>>> {
+  ///Get out Item by amber and month and itemCode
+  ///
+  /// Copied from [outItemsMonthlyReportByAmber].
+  const OutItemsMonthlyReportByAmberFamily();
+
+  ///Get out Item by amber and month and itemCode
+  ///
+  /// Copied from [outItemsMonthlyReportByAmber].
+  OutItemsMonthlyReportByAmberProvider call({
+    required String itemCode,
+    required int amberId,
+    required DateTime repDate,
+  }) {
+    return OutItemsMonthlyReportByAmberProvider(
+      itemCode: itemCode,
+      amberId: amberId,
+      repDate: repDate,
+    );
+  }
+
+  @override
+  OutItemsMonthlyReportByAmberProvider getProviderOverride(
+    covariant OutItemsMonthlyReportByAmberProvider provider,
+  ) {
+    return call(
+      itemCode: provider.itemCode,
+      amberId: provider.amberId,
+      repDate: provider.repDate,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'outItemsMonthlyReportByAmberProvider';
+}
+
+///Get out Item by amber and month and itemCode
+///
+/// Copied from [outItemsMonthlyReportByAmber].
+class OutItemsMonthlyReportByAmberProvider
+    extends AutoDisposeFutureProvider<List<ItemsMovement>> {
+  ///Get out Item by amber and month and itemCode
+  ///
+  /// Copied from [outItemsMonthlyReportByAmber].
+  OutItemsMonthlyReportByAmberProvider({
+    required String itemCode,
+    required int amberId,
+    required DateTime repDate,
+  }) : this._internal(
+          (ref) => outItemsMonthlyReportByAmber(
+            ref as OutItemsMonthlyReportByAmberRef,
+            itemCode: itemCode,
+            amberId: amberId,
+            repDate: repDate,
+          ),
+          from: outItemsMonthlyReportByAmberProvider,
+          name: r'outItemsMonthlyReportByAmberProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$outItemsMonthlyReportByAmberHash,
+          dependencies: OutItemsMonthlyReportByAmberFamily._dependencies,
+          allTransitiveDependencies:
+              OutItemsMonthlyReportByAmberFamily._allTransitiveDependencies,
+          itemCode: itemCode,
+          amberId: amberId,
+          repDate: repDate,
+        );
+
+  OutItemsMonthlyReportByAmberProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.itemCode,
+    required this.amberId,
+    required this.repDate,
+  }) : super.internal();
+
+  final String itemCode;
+  final int amberId;
+  final DateTime repDate;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<ItemsMovement>> Function(
+            OutItemsMonthlyReportByAmberRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: OutItemsMonthlyReportByAmberProvider._internal(
+        (ref) => create(ref as OutItemsMonthlyReportByAmberRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        itemCode: itemCode,
+        amberId: amberId,
+        repDate: repDate,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<ItemsMovement>> createElement() {
+    return _OutItemsMonthlyReportByAmberProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OutItemsMonthlyReportByAmberProvider &&
+        other.itemCode == itemCode &&
+        other.amberId == amberId &&
+        other.repDate == repDate;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, itemCode.hashCode);
+    hash = _SystemHash.combine(hash, amberId.hashCode);
+    hash = _SystemHash.combine(hash, repDate.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin OutItemsMonthlyReportByAmberRef
+    on AutoDisposeFutureProviderRef<List<ItemsMovement>> {
+  /// The parameter `itemCode` of this provider.
+  String get itemCode;
+
+  /// The parameter `amberId` of this provider.
+  int get amberId;
+
+  /// The parameter `repDate` of this provider.
+  DateTime get repDate;
+}
+
+class _OutItemsMonthlyReportByAmberProviderElement
+    extends AutoDisposeFutureProviderElement<List<ItemsMovement>>
+    with OutItemsMonthlyReportByAmberRef {
+  _OutItemsMonthlyReportByAmberProviderElement(super.provider);
+
+  @override
+  String get itemCode =>
+      (origin as OutItemsMonthlyReportByAmberProvider).itemCode;
+  @override
+  int get amberId => (origin as OutItemsMonthlyReportByAmberProvider).amberId;
+  @override
+  DateTime get repDate =>
+      (origin as OutItemsMonthlyReportByAmberProvider).repDate;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

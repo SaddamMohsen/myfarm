@@ -6,7 +6,7 @@ import 'package:myfarm/features/report/domain/entities/monthlyreport.dart';
 import 'package:myfarm/utilities/constants.dart';
 
 ///
-class MyReportTable extends StatelessWidget {
+class MyReportTable extends StatefulWidget {
   const MyReportTable(
       {super.key,
       required this.data,
@@ -29,8 +29,18 @@ class MyReportTable extends StatelessWidget {
     'المتبقي طبق',
     'المتبقي كرتون'
   ];
+
+  @override
+  State<MyReportTable> createState() => _MyReportTableState();
+}
+
+class _MyReportTableState extends State<MyReportTable>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var columns2 = [
       DataColumn(
           label: Expanded(
@@ -119,7 +129,7 @@ class MyReportTable extends StatelessWidget {
 
       // DataColumn(label: Text('تعديل')),
     ].reversed.toList();
-    List<DataColumn> columnsMonth = monthColName
+    List<DataColumn> columnsMonth = MyReportTable.monthColName
         .map((e) => DataColumn(
                 label: Expanded(
               child: Center(
@@ -137,19 +147,22 @@ class MyReportTable extends StatelessWidget {
             controller: ScrollController(
                 keepScrollOffset: true, initialScrollOffset: 10.0),
             header: Text(
-              repType.name == reportType.daily.name
-                  ? " التقرير اليومي بتاريخ ${reportDate.toString().substring(0, 11)}"
-                  : " التقرير الشهري لشهر  ${reportDate.month.toString()}",
+              widget.repType.name == reportType.daily.name
+                  ? " التقرير اليومي بتاريخ ${widget.reportDate.toString().substring(0, 11)}"
+                  : " التقرير الشهري لشهر  ${widget.reportDate.month.toString()}",
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             columnSpacing: 10,
             horizontalMargin: 10,
             dataRowMinHeight: 10.0,
-            rowsPerPage: data.length > 1 ? data.length + 1 : data.length,
-            columns:
-                repType.name == reportType.daily.name ? columns2 : columnsMonth,
-            source: _DataSource(context, data, repType),
+            rowsPerPage: widget.data.length > 1
+                ? widget.data.length + 1
+                : widget.data.length,
+            columns: widget.repType.name == reportType.daily.name
+                ? columns2
+                : columnsMonth,
+            source: _DataSource(context, widget.data, widget.repType),
           ),
         )
       ],
@@ -319,7 +332,8 @@ class _DataSource extends DataTableSource {
           cells: [
         DataCell(Center(
           child: Text(
-            data!.fold('', (p, e) => '${e.outNote!} $p').toString(),
+            //data!.fold('', (p, e) => '${e.outNote!} $p').toString(),
+            '',
             style: Theme.of(context).textTheme.bodySmall,
             textAlign: TextAlign.start,
           ),
@@ -342,11 +356,11 @@ class _DataSource extends DataTableSource {
                 .toString()))),
         DataCell(Center(
             child: Text(data
-                .fold(0, (prev, element) => element.prodCarton + prev)
+                .fold(0, (prev, element) => element.prodTray + prev)
                 .toString()))),
         DataCell(Center(
             child: Text(data
-                .fold(0, (prev, element) => element.prodTray + prev)
+                .fold(0, (prev, element) => element.prodCarton + prev)
                 .toString()))),
         DataCell(Center(
             child: Text(data
@@ -531,7 +545,7 @@ class _DataSource extends DataTableSource {
     }
 
     final row = _row?[index];
-    final mrow = _mrow?[index] ?? null;
+    final mrow = _mrow?[index];
     return DataRow.byIndex(
       index: index,
       selected: repType.name == reportType.daily.name

@@ -13,7 +13,7 @@ import 'package:myfarm/config/provider.dart';
 //@Riverpod(keepAlive:true)
 final amberRepositoryProvider = Provider.autoDispose((ref) {
   final internetConnection = ref.watch(networkAwareProvider);
-  print('check net in amber repo ${internetConnection}');
+  //print('check net in amber repo ${internetConnection}');
   if (internetConnection != NetworkStatus.On) {
     throw AssertionError('لا يوجد اتصال انترنت');
   }

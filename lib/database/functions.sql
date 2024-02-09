@@ -1,3 +1,125 @@
+----------Function to calculate inventory quantity
+create or replace function calculate_inventory_quantity() returns trigger language plpgsql  as $$
+declare
+in_feed numeric :=New.incom_feed;
+out_feed numeric:=New.intak_feed;
+prod_carton int :=New."prodCarton";
+prod_tray int :=New."prodTray";
+--out_carton int :=New."outCarton";
+--out_tray int :=New."outTray";
+no_death int :=New.death;
+
+feed_amount numeric :=quantity from al_watania.inventory where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-002';
+egg_carton_amount int :=quantity from al_watania.inventory where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-003';
+egg_try_amount int :=small_quantity from al_watania.inventory where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-003';
+no_of_hens int := quantity from al_watania.inventory where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-001';
+bags int:=quantity from al_watania.inventory where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-007';
+no_of_tray int:=quantity from al_watania.inventory where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-006';
+no_of_carton int:=quantity from al_watania.inventory where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-005';
+
+nums int[]=ARRAY[]::int[]; --:=select calculate_eggs(prod_tray,prod_carton);
+begin
+no_of_hens :=no_of_hens-no_death;
+feed_amount :=feed_amount + in_feed - out_feed;
+egg_carton_amount :=egg_carton_amount+prod_carton;
+egg_try_amount := egg_try_amount+prod_tray;
+no_of_tray :=no_of_tray-((prod_carton *14)+prod_tray);
+no_of_carton :=no_of_carton-prod_carton;
+
+nums :=array(select al_watania.calculate_egg(egg_try_amount,egg_carton_amount));
+egg_carton_amount := elem from 
+   unnest (nums)
+             with ordinality as a(elem,idx)
+         where idx = 2;
+egg_try_amount :=elem from 
+   unnest (nums)
+             with ordinality as a(elem,idx)
+         where idx = 1;
+
+update al_watania.inventory set quantity = no_of_hens,updated_at=current_timestamp where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-001';
+update al_watania.inventory set quantity = feed_amount,updated_at=current_timestamp where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-002'; 
+update al_watania.inventory set quantity = egg_carton_amount,small_quantity=egg_try_amount,updated_at=current_timestamp where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-003';
+update al_watania.inventory set quantity = bags+out_feed::INT,updated_at=current_timestamp where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-007';
+update al_watania.inventory set quantity = no_of_tray::INT,updated_at=current_timestamp where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-006';
+update al_watania.inventory set quantity = no_of_carton::INT,updated_at=current_timestamp where (farm_id=New.farm_id and amber_id =New.amber_id) and item_code='001-005';
+return new;
+end;    
+$$;
+
+
+
+
+
+
+
+
+-----------FUNCTION TO GET THE OUT ITEMS FROM FARM IN MONTH-------
+------------------ARGS f_id int ,rep_date date,it_code varchar--------
+----------------- return table (mov_date  date,code  varchar,amount numeric,description  text)--
+  create or replace function get_outitems_monthly_by_farm(f_id int,rep_date date,it_code varchar)  
+returns table (movement_date  date,item_code  varchar,quantity numeric,notes  text)
+ language plpgsql 
+as $body$
+
+begin
+return query
+    WITH out_details AS (
+    SELECT
+      em.item_code,
+        em.movement_date,
+        TRIM(em.notes) AS name_of,
+        SUM(em.quantity) AS summation
+    FROM items_movement as em
+    WHERE EXTRACT(MONTH FROM em.movement_date) = EXTRACT(MONTH FROM rep_date)
+    and EXTRACT(YEAR FROM em.movement_date) = EXTRACT(YEAR FROM rep_date) and em.item_code=it_code
+   
+    GROUP BY em.movement_date, TRIM(em.notes),em.item_code
+),
+from_movement AS (
+    SELECT p.farm_id, p.movement_date
+    FROM items_movement as p
+    WHERE EXTRACT(MONTH FROM p.movement_date) = EXTRACT(MONTH FROM rep_date)
+    and    EXTRACT(YEAR FROM p.movement_date) = EXTRACT(Year FROM rep_date)
+)
+SELECT distinct
+    p.movement_date,
+    em.item_code,
+    em.summation,
+    em.name_of
+FROM from_movement AS p
+LEFT JOIN out_details AS em ON p.movement_date = em.movement_date
+WHERE p.farm_id = f_id
+    AND EXTRACT(MONTH FROM p.movement_date) = EXTRACT(MONTH FROM rep_date)
+    AND EXTRACT(Year FROM p.movement_date) = EXTRACT(YEAR FROM rep_date) and em.item_code=it_code
+order by p.movement_date asc;
+
+end;
+$body$
+;
+---------------FUNCTION TO GET THE OUT ITEMS FROM AMBER IN month--------
+-------------- ARGS   f_id ,amber_id int ,rep_date ,item_code varchar------
+------------ return setof record ----------
+create or replace function get_outitems_monthly_by_amber(f_id int,amb_id int,rep_date date,it_code varchar) 
+ returns setof items_movement
+ language plpgsql
+as $body$
+
+begin
+return query
+select *  from items_movement where item_code=it_code and amber_id=amb_id 
+and farm_id=f_id  AND EXTRACT(MONTH FROM movement_date) = EXTRACT(MONTH FROM rep_date)
+order by movement_date asc;
+
+end;
+$body$
+;
+
+-----------------------------------------------
+
+
+
+
+
 ---------FUNCTION TO GET THE MONTHLY REPORT OF AMBER----------
 -------args f_id int , into_date mean which date you want to get the remain egg to-----
 --------- HOW TO USE select * from get_amber_monthly_report (2, 1, '2023-12-20'::date)------

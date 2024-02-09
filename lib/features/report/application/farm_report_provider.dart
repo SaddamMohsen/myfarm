@@ -1,3 +1,4 @@
+import 'package:myfarm/features/production/domain/entities/items_movement.dart';
 import 'package:myfarm/features/report/domain/entities/monthlyreport.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:myfarm/config/provider.dart';
@@ -22,4 +23,14 @@ Future<List<MonthlyReport>> monthFarmReport(MonthFarmReportRef ref,
     {required DateTime repDate}) {
   final repository = ref.watch(reportRepositoryProvider);
   return repository.getMonthlyRepByFarm(repDate);
+}
+
+///Get out Item by Farm and month and itemCode
+@riverpod
+Future<List<ItemsMovement>> outItemsMonthlyReportByFarm(
+    OutItemsMonthlyReportByFarmRef ref,
+    {required String itemCode,
+    required DateTime repDate}) {
+  final repository = ref.watch(reportRepositoryProvider);
+  return repository.getOutItemsReportByMonthForFarm(itemCode, repDate);
 }

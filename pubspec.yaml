@@ -2,7 +2,7 @@ name: myfarm
 description: an application to tracking productions of eggs in poultry farms.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: ">=3.1.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -53,13 +52,13 @@ dependencies:
   flutter_expandable_fab: ^2.0.0
   flex_color_scheme: ^7.3.1
   connectivity_plus: ^5.0.1
+  flutter_native_splash: ^2.3.7
 
 dev_dependencies:
   build_runner: ^2.4.6
   riverpod_generator: ^2.3.2
   flutter_test:
     sdk: flutter
-
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -73,7 +72,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -81,17 +79,16 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-      - images/mag1.png
-      - images/mag2.png
-      #- images/mag3.png
-      - images/mag4.png
-      - images/mag5.png
-      - images/mag6.jpg
-      - images/mag7.jpg
-      - images/mag8.jpg
-      - images/logo2.jpg
-      - images/myfarmlogo.png
-
+    - images/mag1.png
+    - images/mag2.png
+    #- images/mag3.png
+    - images/mag4.png
+    - images/mag5.png
+    - images/mag6.jpg
+    - images/mag7.jpg
+    - images/mag8.jpg
+    - images/logo2.jpg
+    - images/myfarmlogo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -105,14 +102,14 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-   - family: Tajawal
-     fonts:
+    - family: Tajawal
+      fonts:
         - asset: fonts/Tajawal-Black.ttf
         - asset: fonts/Tajawal-ExtraBold.ttf
         - asset: fonts/Tajawal-Bold.ttf
-  #         style: italic
-   - family: Marhey
-     fonts:
+    #         style: italic
+    - family: Marhey
+      fonts:
         - asset: fonts/Marhey-Medium.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700

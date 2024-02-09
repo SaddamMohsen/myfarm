@@ -1,0 +1,13 @@
+flutter_native_splash:
+  color: "#ffffff"
+  image: images/mag8.jpg
+  branding: images/mag8.jpg
+  color_dark: "#121212"
+  image_dark: images/mag8.jpg
+  branding_dark: images/mag8.jpg
+
+  android_12:
+    image: images/mag8.jpg
+    icon_background_color: "#ffffff"
+    image_dark: images/mag8.jpg
+    icon_background_color_dark: "#121212"
